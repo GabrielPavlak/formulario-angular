@@ -3,7 +3,7 @@
   min-height: 100vh;
   background: #f0ebf8;
   color: #202124;
-  font-family: Roboto, 'Segoe UI', Arial, sans-serif;
+  font-family: "Google Sans", Roboto, 'Segoe UI', Arial, sans-serif;
 }
 
 .topo {
@@ -14,41 +14,74 @@
   z-index: 10;
 }
 
-.topo-interno {
-  max-width: 770px;
-  margin: 0 auto;
-  padding: 0 16px;
+.linha-marca {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  flex-wrap: wrap;
+  padding: 8px 20px;
 }
 
 .marca {
-  font-size: 20px;
-  font-weight: 500;
-  color: #673ab7;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.icone-forms {
+  flex: none;
+}
+
+.nome-arquivo {
+  font-size: 18px;
+  color: #202124;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.enviar-topo {
+  flex: none;
+}
+
+.abas {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
 }
 
 .abas button {
   background: none;
   border: none;
   border-bottom: 3px solid transparent;
-  padding: 16px 14px 13px;
+  padding: 10px 18px 9px;
   font-size: 14px;
+  font-weight: 500;
   color: #5f6368;
   cursor: pointer;
 }
 
 .abas button:hover {
   color: #202124;
+  background: #f8f5fc;
 }
 
 .abas button.ativa {
   color: #673ab7;
   border-bottom-color: #673ab7;
-  font-weight: 500;
+}
+
+.contador {
+  display: inline-block;
+  min-width: 18px;
+  margin-left: 6px;
+  padding: 0 6px;
+  border-radius: 9px;
+  background: #673ab7;
+  color: #fff;
+  font-size: 12px;
+  line-height: 18px;
 }
 
 .pagina {
@@ -398,4 +431,26 @@ th {
   h1 {
     font-size: 24px;
   }
+}
+
+.cartao.pergunta {
+  position: relative;
+  cursor: pointer;
+  transition: box-shadow 0.15s;
+}
+
+.cartao.pergunta.focada {
+  cursor: default;
+  box-shadow: 0 1px 3px rgba(60, 64, 67, 0.3), 0 4px 8px 3px rgba(60, 64, 67, 0.15);
+}
+
+.cartao.pergunta.focada::before {
+  content: '';
+  position: absolute;
+  left: -1px;
+  top: -1px;
+  bottom: -1px;
+  width: 6px;
+  border-radius: 8px 0 0 8px;
+  background: #4285f4;
 }

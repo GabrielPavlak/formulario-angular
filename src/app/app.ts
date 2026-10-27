@@ -73,6 +73,7 @@ function carregar<T>(chave: string, padrao: T): T {
 })
 export class App {
   protected readonly aba = signal<Aba>('editar');
+  protected readonly focada = signal<string | null>(null);
   protected readonly form = signal<Formulario>(carregar(CHAVE_FORM, formularioInicial()));
   protected readonly respostas = signal<Resposta[]>(carregar(CHAVE_RESP, []));
 
@@ -126,13 +127,15 @@ export class App {
   }
 
   protected adicionarPergunta(): void {
+    const id = novoId();
     this.form.update((f) => ({
       ...f,
       perguntas: [
         ...f.perguntas,
-        { id: novoId(), titulo: '', tipo: 'texto', obrigatoria: false, opcoes: [] },
+        { id, titulo: '', tipo: 'multipla', obrigatoria: false, opcoes: ['Opção 1'] },
       ],
     }));
+    this.focada.set(id);
   }
 
   protected removerPergunta(id: string): void {

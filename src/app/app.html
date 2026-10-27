@@ -1,14 +1,19 @@
 <header class="topo">
-  <div class="topo-interno">
-    <span class="marca">MeuForms</span>
-    <nav class="abas">
-      <button type="button" [class.ativa]="aba() === 'editar'" (click)="irPara('editar')">Editar</button>
-      <button type="button" [class.ativa]="aba() === 'preencher'" (click)="irPara('preencher')">Preencher</button>
-      <button type="button" [class.ativa]="aba() === 'respostas'" (click)="irPara('respostas')">
-        Respostas ({{ totalRespostas() }})
-      </button>
-    </nav>
+  <div class="linha-marca">
+    <div class="marca">
+      <img class="icone-forms" src="forms-icon.svg" alt="" width="28" height="36" />
+      <span class="nome-arquivo">{{ form().titulo || 'Formulário sem título' }}</span>
+    </div>
+    <button type="button" class="primario enviar-topo" (click)="irPara('preencher')">Visualizar</button>
   </div>
+  <nav class="abas">
+    <button type="button" [class.ativa]="aba() === 'editar'" (click)="irPara('editar')">Perguntas</button>
+    <button type="button" [class.ativa]="aba() === 'respostas'" (click)="irPara('respostas')">
+      Respostas
+      @if (totalRespostas() > 0) { <span class="contador">{{ totalRespostas() }}</span> }
+    </button>
+    <button type="button" [class.ativa]="aba() === 'preencher'" (click)="irPara('preencher')">Preencher</button>
+  </nav>
 </header>
 
 <main class="pagina">
@@ -31,7 +36,7 @@
     </section>
 
     @for (p of form().perguntas; track p.id; let i = $index; let ultimo = $last) {
-      <section class="cartao">
+      <section class="cartao pergunta" [class.focada]="focada() === p.id" (click)="focada.set(p.id)">
         <div class="linha-topo">
           <input
             class="titulo-pergunta"
@@ -82,6 +87,7 @@
           }
         </div>
 
+        @if (focada() === p.id) {
         <div class="rodape-pergunta">
           <label class="obrigatoria">
             <input
@@ -98,6 +104,7 @@
             <button type="button" class="icone perigo" title="Excluir" (click)="removerPergunta(p.id)">Excluir</button>
           </div>
         </div>
+        }
       </section>
     } @empty {
       <p class="vazio">Nenhuma pergunta ainda. Clique em "Adicionar pergunta" para começar.</p>
