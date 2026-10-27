@@ -74,6 +74,8 @@ function carregar<T>(chave: string, padrao: T): T {
 export class App {
   protected readonly aba = signal<Aba>('editar');
   protected readonly focada = signal<string | null>(null);
+  protected readonly confirmandoApagar = signal(false);
+  protected readonly erroImportacao = signal(false);
   protected readonly form = signal<Formulario>(carregar(CHAVE_FORM, formularioInicial()));
   protected readonly respostas = signal<Resposta[]>(carregar(CHAVE_RESP, []));
 
@@ -261,9 +263,8 @@ export class App {
   }
 
   protected apagarRespostas(): void {
-    if (confirm('Apagar todas as respostas salvas?')) {
-      this.respostas.set([]);
-    }
+    this.respostas.set([]);
+    this.confirmandoApagar.set(false);
   }
 
   protected exportarCsv(): void {
@@ -304,8 +305,9 @@ export class App {
           })),
         });
         this.respostas.set([]);
+        this.erroImportacao.set(false);
       } catch {
-        alert('Não foi possível ler esse arquivo. Use um JSON exportado por este app.');
+        this.erroImportacao.set(true);
       }
       input.value = '';
     });

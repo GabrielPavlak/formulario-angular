@@ -118,6 +118,9 @@
         <input type="file" accept="application/json,.json" (change)="importarJson($event)" hidden />
       </label>
     </div>
+    @if (erroImportacao()) {
+      <p class="msg-erro">Não foi possível ler esse arquivo. Use um JSON exportado por este app.</p>
+    }
   }
 
   @if (aba() === 'preencher') {
@@ -241,7 +244,12 @@
 
       <div class="barra-baixo">
         <button type="button" class="primario" (click)="exportarCsv()">Baixar CSV</button>
-        <button type="button" class="secundario perigo" (click)="apagarRespostas()">Apagar respostas</button>
+        @if (confirmandoApagar()) {
+          <button type="button" class="secundario perigo" (click)="apagarRespostas()">Confirmar: apagar tudo</button>
+          <button type="button" class="secundario" (click)="confirmandoApagar.set(false)">Cancelar</button>
+        } @else {
+          <button type="button" class="secundario perigo" (click)="confirmandoApagar.set(true)">Apagar respostas</button>
+        }
       </div>
     } @else {
       <p class="vazio">Ainda não há respostas. Use a aba "Preencher" para testar o formulário.</p>
