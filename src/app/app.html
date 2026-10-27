@@ -1,0 +1,243 @@
+<header class="topo">
+  <div class="topo-interno">
+    <span class="marca">MeuForms</span>
+    <nav class="abas">
+      <button type="button" [class.ativa]="aba() === 'editar'" (click)="irPara('editar')">Editar</button>
+      <button type="button" [class.ativa]="aba() === 'preencher'" (click)="irPara('preencher')">Preencher</button>
+      <button type="button" [class.ativa]="aba() === 'respostas'" (click)="irPara('respostas')">
+        Respostas ({{ totalRespostas() }})
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main class="pagina">
+  @if (aba() === 'editar') {
+    <section class="cartao cabecalho">
+      <input
+        class="titulo-form"
+        type="text"
+        placeholder="Título do formulário"
+        [ngModel]="form().titulo"
+        (ngModelChange)="atualizarCabecalho('titulo', $event)"
+      />
+      <input
+        class="descricao-form"
+        type="text"
+        placeholder="Descrição do formulário"
+        [ngModel]="form().descricao"
+        (ngModelChange)="atualizarCabecalho('descricao', $event)"
+      />
+    </section>
+
+    @for (p of form().perguntas; track p.id; let i = $index; let ultimo = $last) {
+      <section class="cartao">
+        <div class="linha-topo">
+          <input
+            class="titulo-pergunta"
+            type="text"
+            placeholder="Pergunta"
+            [ngModel]="p.titulo"
+            (ngModelChange)="alterar(p.id, { titulo: $event })"
+          />
+          <select [ngModel]="p.tipo" (ngModelChange)="alterar(p.id, { tipo: $event })">
+            @for (t of tipos; track t.valor) {
+              <option [value]="t.valor">{{ t.rotulo }}</option>
+            }
+          </select>
+        </div>
+
+        <div class="previa">
+          @switch (p.tipo) {
+            @case ('texto') {
+              <div class="falso-campo">Texto de resposta curta</div>
+            }
+            @case ('paragrafo') {
+              <div class="falso-campo longo">Texto de resposta longa</div>
+            }
+            @default {
+              @for (o of p.opcoes; track $index) {
+                <div class="opcao-edicao">
+                  <span class="marcador" [class.quadrado]="p.tipo === 'caixas'">
+                    @if (p.tipo === 'lista') { {{ $index + 1 }}. }
+                  </span>
+                  <input
+                    type="text"
+                    [ngModel]="o"
+                    (ngModelChange)="alterarOpcao(p.id, $index, $event)"
+                  />
+                  <button
+                    type="button"
+                    class="icone"
+                    title="Remover opção"
+                    [disabled]="p.opcoes.length <= 1"
+                    (click)="removerOpcao(p.id, $index)"
+                  >
+                    ✕
+                  </button>
+                </div>
+              }
+              <button type="button" class="link" (click)="adicionarOpcao(p.id)">+ Adicionar opção</button>
+            }
+          }
+        </div>
+
+        <div class="rodape-pergunta">
+          <label class="obrigatoria">
+            <input
+              type="checkbox"
+              [checked]="p.obrigatoria"
+              (change)="alterar(p.id, { obrigatoria: $any($event.target).checked })"
+            />
+            Obrigatória
+          </label>
+          <div class="acoes">
+            <button type="button" class="icone" title="Subir" [disabled]="i === 0" (click)="mover(p.id, -1)">↑</button>
+            <button type="button" class="icone" title="Descer" [disabled]="ultimo" (click)="mover(p.id, 1)">↓</button>
+            <button type="button" class="icone" title="Duplicar" (click)="duplicarPergunta(p.id)">Duplicar</button>
+            <button type="button" class="icone perigo" title="Excluir" (click)="removerPergunta(p.id)">Excluir</button>
+          </div>
+        </div>
+      </section>
+    } @empty {
+      <p class="vazio">Nenhuma pergunta ainda. Clique em "Adicionar pergunta" para começar.</p>
+    }
+
+    <div class="barra-baixo">
+      <button type="button" class="primario" (click)="adicionarPergunta()">+ Adicionar pergunta</button>
+      <button type="button" class="secundario" (click)="exportarJson()">Exportar formulário (JSON)</button>
+      <label class="secundario arquivo">
+        Importar formulário
+        <input type="file" accept="application/json,.json" (change)="importarJson($event)" hidden />
+      </label>
+    </div>
+  }
+
+  @if (aba() === 'preencher') {
+    <section class="cartao cabecalho">
+      <h1>{{ form().titulo || 'Formulário sem título' }}</h1>
+      @if (form().descricao) {
+        <p class="descricao-leitura">{{ form().descricao }}</p>
+      }
+    </section>
+
+    @if (enviado()) {
+      <section class="cartao">
+        <p>Sua resposta foi registrada.</p>
+        <button type="button" class="link" (click)="outraResposta()">Enviar outra resposta</button>
+      </section>
+    } @else {
+      @for (p of form().perguntas; track p.id) {
+        <section class="cartao" [class.com-erro]="erros.has(p.id)">
+          <p class="enunciado">
+            {{ p.titulo || '(pergunta sem título)' }}
+            @if (p.obrigatoria) { <span class="asterisco">*</span> }
+          </p>
+
+          @switch (p.tipo) {
+            @case ('texto') {
+              <input
+                class="resposta"
+                type="text"
+                placeholder="Sua resposta"
+                [value]="valores[p.id] ?? ''"
+                (input)="valores[p.id] = $any($event.target).value"
+              />
+            }
+            @case ('paragrafo') {
+              <textarea
+                class="resposta"
+                rows="4"
+                placeholder="Sua resposta"
+                [value]="valores[p.id] ?? ''"
+                (input)="valores[p.id] = $any($event.target).value"
+              ></textarea>
+            }
+            @case ('multipla') {
+              @for (o of p.opcoes; track $index) {
+                <label class="escolha">
+                  <input
+                    type="radio"
+                    [name]="p.id"
+                    [checked]="valores[p.id] === o"
+                    (change)="valores[p.id] = o"
+                  />
+                  {{ o }}
+                </label>
+              }
+            }
+            @case ('caixas') {
+              @for (o of p.opcoes; track $index) {
+                <label class="escolha">
+                  <input
+                    type="checkbox"
+                    [checked]="caixaMarcada(p.id, o)"
+                    (change)="alternarCaixa(p.id, o, $any($event.target).checked)"
+                  />
+                  {{ o }}
+                </label>
+              }
+            }
+            @case ('lista') {
+              <select class="resposta" (change)="valores[p.id] = $any($event.target).value">
+                <option value="" [selected]="!valores[p.id]">Escolher</option>
+                @for (o of p.opcoes; track $index) {
+                  <option [value]="o" [selected]="valores[p.id] === o">{{ o }}</option>
+                }
+              </select>
+            }
+          }
+
+          @if (erros.has(p.id)) {
+            <p class="msg-erro">Esta pergunta é obrigatória.</p>
+          }
+        </section>
+      }
+
+      <div class="barra-baixo">
+        <button type="button" class="primario" (click)="enviar()">Enviar</button>
+      </div>
+    }
+  }
+
+  @if (aba() === 'respostas') {
+    <section class="cartao cabecalho">
+      <h1>Respostas</h1>
+      <p class="descricao-leitura">
+        {{ totalRespostas() }} {{ totalRespostas() === 1 ? 'resposta salva' : 'respostas salvas' }} neste navegador.
+      </p>
+    </section>
+
+    @if (totalRespostas() > 0) {
+      <section class="cartao tabela-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Data</th>
+              @for (p of form().perguntas; track p.id) {
+                <th>{{ p.titulo || '(sem título)' }}</th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (r of respostas(); track r.data) {
+              <tr>
+                <td>{{ formatarData(r.data) }}</td>
+                @for (p of form().perguntas; track p.id) {
+                  <td>{{ formatar(r.valores[p.id]) }}</td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </section>
+
+      <div class="barra-baixo">
+        <button type="button" class="primario" (click)="exportarCsv()">Baixar CSV</button>
+        <button type="button" class="secundario perigo" (click)="apagarRespostas()">Apagar respostas</button>
+      </div>
+    } @else {
+      <p class="vazio">Ainda não há respostas. Use a aba "Preencher" para testar o formulário.</p>
+    }
+  }
+</main>
