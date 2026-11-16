@@ -1,55 +1,65 @@
-# MeuForms — Pesquisa Full-Stack (Angular + Python + SQLite)
+# MeuForms — Full-Stack com Angular + Node.js + SQLite
 
-Este projeto preserva o editor Angular existente e o integra a uma API real. A pesquisa inicial trata de **Inteligência Artificial e Segurança Digital**, com 14 perguntas editáveis.
+O projeto original em Angular foi preservado e integrado a uma API Node.js. **Não é necessário instalar Python.**
 
-## Pré-requisitos
-- Node.js e npm compatíveis com Angular 22 (consulte a matriz oficial da versão instalada)
-- Python 3.10 ou superior
+## Requisitos
 
-## Executar localmente
+- Node.js 24 LTS ou superior compatível com o Angular instalado
+- npm (incluso no Node.js)
 
-Abra **dois terminais** na raiz do repositório.
+## Executar no Windows (PowerShell)
 
-Terminal 1 (Windows PowerShell):
+Abra **dois terminais** na pasta do repositório.
+
+**Terminal 1 — servidor / banco de dados:**
+
 ```powershell
-$env:FORMS_ADMIN_TOKEN = "coloque-aqui-uma-chave-segura-de-mais-de-16-caracteres"
-python backend/server.py
+$env:FORMS_ADMIN_TOKEN = "escolha-uma-chave-bem-longa-e-segura"
+npm run backend
 ```
 
-Terminal 2:
+**Terminal 2 — interface Angular:**
+
 ```powershell
 npm ci
 npm start
 ```
 
-Acesse http://localhost:4200 . Para abrir o editor, clique em **Editor** e informe o token configurado no terminal 1.
+Acesse `http://localhost:4200`. Para administrar as perguntas e consultar as respostas, clique em **Editor** e informe o token definido no primeiro terminal.
 
-**Importante:** O token administrativo não é salvo no código: somente na variável de ambiente do backend e, após login, temporariamente na sessão do navegador. O Angular encaminha /api ao backend local usando proxy.conf.json.
+O banco SQLite é criado automaticamente em `backend/forms.sqlite3` na primeira execução. A API Node.js usa somente recursos nativos do Node, sem Express e sem instalação de bibliotecas no backend. O Angular encaminha as chamadas `/api` ao servidor na porta 8000 por meio de `proxy.conf.json`.
 
-## Recursos
-- Formulário com 14 perguntas e cinco tipos de resposta
-- Editor de perguntas e alternativas, reordenação e duplicação
-- Respostas persistidas em SQLite no servidor; validação no frontend e backend
-- Autenticação por token para edição e resultados
-- Tabela de resultados, exportação CSV, exclusão com confirmação
-- Layout responsivo e mensagens de sucesso/erro
-- Testes do backend com `cd backend; python -m unittest -v`
-- Testes Angular: `npm test`; build: `npm run build`
+## Funcionalidades
 
-## API
-- `GET /api/health`: status
-- `GET /api/form`: formulário público
-- `POST /api/responses`: enviar respostas (JSON `{ "valores": { "id": "resposta" } }`)
-- `GET /api/responses`: listar respostas (admin)
-- `GET /api/responses.csv`: exportar CSV (admin)
-- `PUT /api/form`: editar formulário (admin)
-- `DELETE /api/responses`: excluir respostas (admin)
+- Pesquisa inicial pronta sobre Inteligência Artificial e Segurança Digital, com 14 perguntas
+- Editor de perguntas e opções, duplicação, remoção, organização e campos obrigatórios
+- Envio de respostas para o servidor, armazenadas em SQLite
+- Área administrativa protegida com token
+- Consulta, exportação CSV e exclusão de respostas
+- Validação de alternativas e campos obrigatórios no backend
+- Layout responsivo
 
-Endpoints admin exigem `Authorization: Bearer SEU_TOKEN`.
+## Comandos e testes
 
-## Avisos e limitações
-- A aplicação deve ser executada atrás de HTTPS e autenticação mais forte antes de uso público em produção.
-- O bloqueio simples de envios repetidos por IP é proteção básica, não substitui anti-spam profissional.
-- Mudanças nas perguntas não modificam respostas históricas; a exportação apresenta as perguntas atuais.
-- Não colete senhas, documentos ou dados sensíveis. Defina política de privacidade, retenção e base legal antes de coletar dados reais.
-- Não coloque o arquivo .sqlite3 ou o token no GitHub.
+```powershell
+npm run backend
+npm run test:backend
+npm run build
+npm test
+```
+
+## Rotas de API
+
+- `GET /api/health` — status público
+- `GET /api/form` — formulário público
+- `POST /api/responses` — envio de respostas
+- `GET /api/responses` — respostas (admin)
+- `GET /api/responses.csv` — CSV (admin)
+- `PUT /api/form` — editar formulário (admin)
+- `DELETE /api/responses` — remover respostas (admin)
+
+Administração requer `Authorization: Bearer <token>`.
+
+## Segurança e produção
+
+Este projeto é adequado como base acadêmica e desenvolvimento local. Para acesso público na internet, configure HTTPS, autenticação de usuários, proteção contra spam, política de privacidade e retenção de dados. O limitador de frequência por IP é básico. O token não deve ser publicado. O banco `*.sqlite3` não deve ser commitado no GitHub. Edições das perguntas não migram respostas já existentes.

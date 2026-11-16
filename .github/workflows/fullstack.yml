@@ -13,13 +13,9 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
       - name: Install frontend dependencies
         run: npm ci
       - name: Build Angular application
         run: npm run build
-      - name: Backend unit tests
-        working-directory: backend
-        run: python -m unittest -v
+      - name: Backend Node.js tests
+        run: npm run test:backend
