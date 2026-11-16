@@ -454,3 +454,12 @@ th {
   border-radius: 8px 0 0 8px;
   background: #4285f4;
 }
+
+.alerta { background: #fff3d9; border: 1px solid #e7bf68; color: #65470a; border-radius: 8px; padding: 14px 18px; margin-bottom: 16px; }
+.campo-label { display: block; font-size: 13px; font-weight: 600; color: #565160; margin: 14px 0 6px; }
+.aviso-privacidade { color: #5f6368; border-top: 1px solid #e8eaed; padding-top: 12px; font-size: 12px; margin-top: 18px; }
+.num { font-weight: 700; color: #673ab7; }
+button:disabled { opacity: .5; cursor: not-allowed; }
+input, textarea, select { max-width: 100%; box-sizing: border-box; }
+:focus-visible { outline: 2px solid #673ab7; outline-offset: 2px; }
+@media (max-width: 520px) { .linha-marca {padding: 10px;} .abas button {padding: 12px 8px; font-size: 12px;} .acoes {flex-wrap: wrap;} .pagina {padding: 14px 10px 40px;} }
