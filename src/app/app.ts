@@ -80,7 +80,7 @@ export class App implements OnInit {
     if (aba === 'preencher') this.limparPreenchimento();
     if (aba === 'respostas' && this.autenticado()) await this.atualizarRespostas();
   }
-  private async atualizarRespostas(): Promise<void> {
+  protected async atualizarRespostas(): Promise<void> {
     try { const r = await this.requisicao<{ respostas: Resposta[] }>('/api/responses', {}, true); this.respostas.set(r.respostas); }
     catch (e) { this.mensagem.set(mensagemErro(e)); }
   }
