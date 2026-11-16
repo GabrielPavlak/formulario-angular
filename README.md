@@ -1,50 +1,55 @@
-# MeuForms
+# MeuForms — Pesquisa Full-Stack (Angular + Python + SQLite)
 
-Criador de formulários editável feito com Angular, no estilo do Google Forms. Dá para montar as perguntas, testar o preenchimento e ver as respostas, tudo salvo no próprio navegador (localStorage).
+Este projeto preserva o editor Angular existente e o integra a uma API real. A pesquisa inicial trata de **Inteligência Artificial e Segurança Digital**, com 14 perguntas editáveis.
 
-## O que o projeto faz
+## Pré-requisitos
+- Node.js e npm compatíveis com Angular 22 (consulte a matriz oficial da versão instalada)
+- Python 3.10 ou superior
 
-- Edita título e descrição do formulário
-- Cinco tipos de pergunta: resposta curta, parágrafo, múltipla escolha, caixas de seleção e lista suspensa
-- Marcar pergunta como obrigatória, duplicar, excluir e reordenar
-- Aba "Preencher" para responder o formulário, com validação dos campos obrigatórios
-- Aba "Respostas" com tabela e exportação em CSV
-- Exportar e importar a estrutura do formulário em JSON
+## Executar localmente
 
-## Como rodar
+Abra **dois terminais** na raiz do repositório.
 
-Precisa do Node.js (versão 20 ou mais nova) e do VS Code.
+Terminal 1 (Windows PowerShell):
+```powershell
+$env:FORMS_ADMIN_TOKEN = "coloque-aqui-uma-chave-segura-de-mais-de-16-caracteres"
+python backend/server.py
+```
 
-```bash
-npm install
+Terminal 2:
+```powershell
+npm ci
 npm start
 ```
 
-Depois abra http://localhost:4200 no navegador. No VS Code, também dá para usar o terminal integrado (Ctrl + ') e rodar os mesmos comandos.
+Acesse http://localhost:4200 . Para abrir o editor, clique em **Editor** e informe o token configurado no terminal 1.
 
-Outros comandos:
+**Importante:** O token administrativo não é salvo no código: somente na variável de ambiente do backend e, após login, temporariamente na sessão do navegador. O Angular encaminha /api ao backend local usando proxy.conf.json.
 
-```bash
-npm test        # testes unitários
-npm run build   # build de produção em dist/meu-forms
-```
+## Recursos
+- Formulário com 14 perguntas e cinco tipos de resposta
+- Editor de perguntas e alternativas, reordenação e duplicação
+- Respostas persistidas em SQLite no servidor; validação no frontend e backend
+- Autenticação por token para edição e resultados
+- Tabela de resultados, exportação CSV, exclusão com confirmação
+- Layout responsivo e mensagens de sucesso/erro
+- Testes do backend com `cd backend; python -m unittest -v`
+- Testes Angular: `npm test`; build: `npm run build`
 
-## Estrutura
+## API
+- `GET /api/health`: status
+- `GET /api/form`: formulário público
+- `POST /api/responses`: enviar respostas (JSON `{ "valores": { "id": "resposta" } }`)
+- `GET /api/responses`: listar respostas (admin)
+- `GET /api/responses.csv`: exportar CSV (admin)
+- `PUT /api/form`: editar formulário (admin)
+- `DELETE /api/responses`: excluir respostas (admin)
 
-```
-src/app/app.ts     lógica do componente (estado, edição, respostas, exportação)
-src/app/app.html   template das três abas
-src/app/app.css    estilos
-```
+Endpoints admin exigem `Authorization: Bearer SEU_TOKEN`.
 
-## Subindo para o GitHub
-
-Crie um repositório vazio no GitHub (sem README) e rode, trocando a URL pela do seu repositório:
-
-```bash
-git remote add origin https://github.com/SEU-USUARIO/meu-forms.git
-git branch -M main
-git push -u origin main
-```
-
-O projeto já vem com um commit inicial feito.
+## Avisos e limitações
+- A aplicação deve ser executada atrás de HTTPS e autenticação mais forte antes de uso público em produção.
+- O bloqueio simples de envios repetidos por IP é proteção básica, não substitui anti-spam profissional.
+- Mudanças nas perguntas não modificam respostas históricas; a exportação apresenta as perguntas atuais.
+- Não colete senhas, documentos ou dados sensíveis. Defina política de privacidade, retenção e base legal antes de coletar dados reais.
+- Não coloque o arquivo .sqlite3 ou o token no GitHub.

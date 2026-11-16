@@ -1,22 +1,17 @@
 import { TestBed } from '@angular/core/testing';
 import { App } from './app';
-
 describe('App', () => {
   beforeEach(async () => {
-    localStorage.clear();
-    await TestBed.configureTestingModule({
-      imports: [App],
-    }).compileComponents();
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, headers: new Headers({ 'content-type': 'application/json' }), json: async () => ({ titulo: 'Pesquisa', descricao: 'Teste', perguntas: [] }) }));
+    sessionStorage.clear();
+    await TestBed.configureTestingModule({ imports: [App] }).compileComponents();
   });
-
-  it('cria o componente', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  it('cria componente e exibe pesquisa', async () => {
     const fixture = TestBed.createComponent(App);
-    expect(fixture.componentInstance).toBeTruthy();
-  });
-
-  it('mostra o titulo padrão do formulário na aba de edição', async () => {
-    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
     await fixture.whenStable();
-    expect(fixture.nativeElement.querySelector('.titulo-form')).toBeTruthy();
+    fixture.detectChanges();
+    expect(fixture.nativeElement.textContent).toContain('Pesquisa');
   });
 });

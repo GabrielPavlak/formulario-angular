@@ -1,0 +1,185 @@
+{
+  "titulo": "Pesquisa: Inteligência Artificial e Segurança Digital",
+  "descricao": "Pesquisa acadêmica anônima sobre hábitos digitais, ferramentas de IA e boas práticas de segurança. Tempo estimado: 4 a 6 minutos. Não forneça informações pessoais.",
+  "perguntas": [
+    {
+      "id": "faixa",
+      "titulo": "Qual é sua faixa etária?",
+      "tipo": "multipla",
+      "obrigatoria": true,
+      "opcoes": [
+        "Até 17 anos",
+        "18 a 24 anos",
+        "25 a 34 anos",
+        "35 a 44 anos",
+        "45 anos ou mais",
+        "Prefiro não informar"
+      ]
+    },
+    {
+      "id": "perfil",
+      "titulo": "Qual é sua relação com a área de tecnologia?",
+      "tipo": "multipla",
+      "obrigatoria": true,
+      "opcoes": [
+        "Estudante",
+        "Profissional de TI",
+        "Profissional de outra área",
+        "Entusiasta",
+        "Não tenho contato frequente"
+      ]
+    },
+    {
+      "id": "frequencia",
+      "titulo": "Com que frequência você utiliza ferramentas de inteligência artificial?",
+      "tipo": "multipla",
+      "obrigatoria": true,
+      "opcoes": [
+        "Todos os dias",
+        "Algumas vezes por semana",
+        "Uma vez por semana",
+        "Raramente",
+        "Nunca"
+      ]
+    },
+    {
+      "id": "ferramentas",
+      "titulo": "Quais ferramentas de IA você já utilizou?",
+      "tipo": "caixas",
+      "obrigatoria": true,
+      "opcoes": [
+        "ChatGPT",
+        "Gemini",
+        "Copilot",
+        "Claude",
+        "Geradores de imagens",
+        "Nenhuma",
+        "Outras"
+      ]
+    },
+    {
+      "id": "finalidade",
+      "titulo": "Para quais atividades você utiliza ou utilizaria IA?",
+      "tipo": "caixas",
+      "obrigatoria": true,
+      "opcoes": [
+        "Estudos",
+        "Programação",
+        "Trabalho",
+        "Pesquisa",
+        "Criação de conteúdo",
+        "Organização pessoal",
+        "Não utilizo"
+      ]
+    },
+    {
+      "id": "confianca",
+      "titulo": "Qual seu nível de confiança nas respostas fornecidas por IA?",
+      "tipo": "lista",
+      "obrigatoria": true,
+      "opcoes": [
+        "1 - Nenhuma",
+        "2 - Baixa",
+        "3 - Moderada",
+        "4 - Alta",
+        "5 - Muito alta"
+      ]
+    },
+    {
+      "id": "verificacao",
+      "titulo": "Você costuma verificar se informações geradas por IA estão corretas?",
+      "tipo": "multipla",
+      "obrigatoria": true,
+      "opcoes": [
+        "Sempre",
+        "Frequentemente",
+        "Às vezes",
+        "Raramente",
+        "Nunca",
+        "Não utilizo IA"
+      ]
+    },
+    {
+      "id": "riscos",
+      "titulo": "Quais riscos associados à IA mais preocupam você?",
+      "tipo": "caixas",
+      "obrigatoria": true,
+      "opcoes": [
+        "Privacidade de dados",
+        "Informações falsas",
+        "Preconceitos algorítmicos",
+        "Dependência tecnológica",
+        "Substituição de empregos",
+        "Nenhum"
+      ]
+    },
+    {
+      "id": "senhas",
+      "titulo": "Como você gerencia suas senhas?",
+      "tipo": "multipla",
+      "obrigatoria": true,
+      "opcoes": [
+        "Gerenciador de senhas",
+        "Senhas diferentes memorizadas",
+        "Repito a mesma senha",
+        "Anoto em local privado",
+        "Prefiro não responder"
+      ]
+    },
+    {
+      "id": "mfa",
+      "titulo": "Você utiliza autenticação em duas etapas nas suas contas?",
+      "tipo": "multipla",
+      "obrigatoria": true,
+      "opcoes": [
+        "Sim, na maioria",
+        "Sim, em algumas",
+        "Não",
+        "Não sei o que é"
+      ]
+    },
+    {
+      "id": "golpes",
+      "titulo": "Você sabe identificar mensagens falsas ou tentativas de phishing?",
+      "tipo": "multipla",
+      "obrigatoria": true,
+      "opcoes": [
+        "Sim, com segurança",
+        "Às vezes tenho dúvidas",
+        "Não sei identificar"
+      ]
+    },
+    {
+      "id": "exposicao",
+      "titulo": "Você evita enviar dados pessoais e confidenciais para ferramentas de IA?",
+      "tipo": "multipla",
+      "obrigatoria": true,
+      "opcoes": [
+        "Sempre",
+        "Na maioria das vezes",
+        "Raramente",
+        "Nunca",
+        "Não utilizo IA"
+      ]
+    },
+    {
+      "id": "educacao",
+      "titulo": "Você considera importante incluir educação sobre IA e segurança digital nas escolas?",
+      "tipo": "multipla",
+      "obrigatoria": true,
+      "opcoes": [
+        "Muito importante",
+        "Importante",
+        "Pouco importante",
+        "Não considero importante"
+      ]
+    },
+    {
+      "id": "comentarios",
+      "titulo": "Que melhoria você gostaria de ver no uso de IA ou na segurança digital?",
+      "tipo": "paragrafo",
+      "obrigatoria": false,
+      "opcoes": []
+    }
+  ]
+}
