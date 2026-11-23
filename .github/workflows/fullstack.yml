@@ -1,11 +1,11 @@
-name: Banco Escola - validação full-stack
+name: Banco Escola - qualidade full-stack
 on:
   push:
-    branches: [main,feature/banco-escola-experiencia-premium]
+    branches: [main,feature/banco-escola-refinamento-entrega]
   pull_request:
     branches: [main]
 jobs:
-  validate:
+  quality:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -13,11 +13,11 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - name: Install dependencies
+      - name: Instalar dependências com lockfile
         run: npm ci
-      - name: Angular production build
+      - name: Compilar Angular para produção
         run: npm run build
-      - name: Angular unit tests
+      - name: Testes de interface Angular
         run: npm test -- --watch=false
-      - name: Backend and integration tests
+      - name: Testes unitários e de integração da API
         run: npm run test:backend

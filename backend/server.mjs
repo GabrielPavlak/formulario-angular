@@ -88,8 +88,9 @@ export function accounts(db){
   +' FROM bank_accounts a LEFT JOIN bank_entries e ON a.id=e.account_id GROUP BY a.id ORDER BY a.id').all();
 }
 const accountExists=(db,id)=>!!db.prepare('SELECT 1 FROM bank_accounts WHERE id=?').get(id);
-export function createEntry(db,input){
+export function createEntry(db,input,category='Outros'){
   const v=validateEntry(input);
+  if(!categories.includes(category))fail('Categoria inválida.');
   db.exec('BEGIN IMMEDIATE');
   try{
     if(!accountExists(db,v.accountId))fail('Conta fictícia não encontrada.',404);
@@ -101,8 +102,11 @@ export function createEntry(db,input){
       saldo+=row.kind==='entrada'?row.amount_cents:-row.amount_cents;
       if(saldo<0)fail('Saldo insuficiente na data informada. Movimento não registrado.',422);
     }
+    const entryId=Number(inserted.lastInsertRowid);
+    // Entrada, categoria e trilha de auditoria são uma única operação ACID.
+    addEntryExtras(db,entryId,v.accountId,category);
     db.exec('COMMIT');
-    return {id:Number(inserted.lastInsertRowid),balanceCents:saldo};
+    return {id:entryId,balanceCents:saldo};
   }catch(err){db.exec('ROLLBACK');throw err;}
 }
 export function statement(db,params){
@@ -174,8 +178,7 @@ export function createApp({db,token}){
         const category=data.category??'Outros';
         if(!categories.includes(category))return respond(res,400,{error:'Categoria inválida.'});
         checkCard(db,data.accountId,data.method,data.kind);
-        const entry=createEntry(db,data);
-        addEntryExtras(db,entry.id,data.accountId,category);
+        const entry=createEntry(db,data,category);
         return respond(res,201,{message:'Movimentação fictícia registrada.',...entry});
       }
       if(path==='/api/bank/statement.csv'&&method==='GET'){

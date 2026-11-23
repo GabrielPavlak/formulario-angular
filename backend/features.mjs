@@ -143,12 +143,14 @@ function scheduledExecute(db,scheduleId){
 function analytics(db,accountId,month){
  account(db,accountId);ensure(monthValid(month),'Mês inválido. Use AAAA-MM.');
  const entries=db.prepare("SELECT e.kind,e.amount_cents AS cents,COALESCE(t.category,'Outros') AS category FROM bank_entries e LEFT JOIN bank_entry_categories t ON t.entry_id=e.id WHERE e.account_id=? AND substr(e.occurred_on,1,7)=?").all(accountId,month);
- const incomeCents=entries.filter(e=>e.kind==='entrada').reduce((sum,e)=>sum+e.cents,0);
- const expenseCents=entries.filter(e=>e.kind==='saida'&&e.category!=='Reserva').reduce((sum,e)=>sum+e.cents,0);
+ // Reservas e transferências internas representam realocações, não renda ou despesa de consumo.
+ const operational=entries.filter(e=>!['Reserva','Transferências'].includes(e.category));
+ const incomeCents=operational.filter(e=>e.kind==='entrada').reduce((sum,e)=>sum+e.cents,0);
+ const expenseCents=operational.filter(e=>e.kind==='saida').reduce((sum,e)=>sum+e.cents,0);
  const byCategory={};
- for(const e of entries)if(e.kind==='saida'&&e.category!=='Reserva')byCategory[e.category]=(byCategory[e.category]??0)+e.cents;
+ for(const e of operational)if(e.kind==='saida')byCategory[e.category]=(byCategory[e.category]??0)+e.cents;
  const budgets=db.prepare('SELECT category,limit_cents AS limitCents FROM bank_budgets WHERE account_id=? AND month=?').all(accountId,month);
- const history=db.prepare("SELECT substr(occurred_on,1,7) AS month, SUM(CASE WHEN kind='entrada' THEN amount_cents ELSE 0 END) AS incomeCents, SUM(CASE WHEN kind='saida' THEN amount_cents ELSE 0 END) AS expenseCents FROM bank_entries WHERE account_id=? GROUP BY substr(occurred_on,1,7) ORDER BY month DESC LIMIT 6").all(accountId).reverse();
+ const history=db.prepare("SELECT substr(e.occurred_on,1,7) AS month, SUM(CASE WHEN e.kind='entrada' AND COALESCE(c.category,'Outros') NOT IN ('Reserva','Transferências') THEN e.amount_cents ELSE 0 END) AS incomeCents, SUM(CASE WHEN e.kind='saida' AND COALESCE(c.category,'Outros') NOT IN ('Reserva','Transferências') THEN e.amount_cents ELSE 0 END) AS expenseCents FROM bank_entries e LEFT JOIN bank_entry_categories c ON c.entry_id=e.id WHERE e.account_id=? GROUP BY substr(e.occurred_on,1,7) ORDER BY month DESC LIMIT 6").all(accountId).reverse();
  return {month,incomeCents,expenseCents,byCategory,budgets,history};
 }
 const reply=(res,status,data)=>{const b=Buffer.from(JSON.stringify(data));res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff','Content-Length':b.length});res.end(b);};
@@ -227,6 +229,8 @@ export async function handleExtra(db,req,res,path,url){
     const dueOn=p.dueOn;ensure(isoDate(dueOn),'Data de vencimento inválida.');
     const cents=amount(p.amountCents);
     const result=tx(db,()=>{
+      const paid=db.prepare('SELECT id FROM bank_bills WHERE account_id=? AND reference=?').get(accountId,reference);
+      ensure(!paid,'Este boleto fictício já foi registrado com a mesma referência.',409);
       const entryId=debit(db,accountId,cents,'Boleto simulado','Pagamento fictício: '+payee,'Serviços',reference);
       const r=db.prepare('INSERT INTO bank_bills(account_id,payee,reference,amount_cents,due_on,entry_id,created_at) VALUES (?,?,?,?,?,?,?)')
         .run(accountId,payee,reference,cents,dueOn,entryId,stamp());

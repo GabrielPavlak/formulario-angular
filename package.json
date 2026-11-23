@@ -8,7 +8,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "backend": "node backend/server.mjs",
-    "test:backend": "node --test backend/server.test.mjs backend/features.test.mjs backend/experience.test.mjs"
+    "test:backend": "node --test backend/server.test.mjs backend/features.test.mjs backend/experience.test.mjs backend/refinement.test.mjs",
+    "check": "npm run build && npm test -- --watch=false && npm run test:backend"
   },
   "private": true,
   "packageManager": "npm@10.9.9",

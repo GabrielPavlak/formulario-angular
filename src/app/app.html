@@ -349,7 +349,7 @@
               } @empty {<small>Salve um destinatário após selecioná-lo.</small>}
             </div>
           </div>
-          <form (submit)="$event.preventDefault(); transferir()" class="stack-form">
+          <form (submit)="$event.preventDefault(); revisarTransferencia()" class="stack-form">
             <div class="field">
               <label for="dest">Conta de destino *</label>
               <select id="dest" name="dest" [(ngModel)]="transfer.toAccountId">
@@ -375,7 +375,7 @@
             </div>
             <div class="info-strip">A operação é executada apenas entre contas SIM-XXXXX deste projeto. Não há Pix ou TED real.</div>
             <button type="submit" class="button button-primary" [disabled]="salvando()||!contasDestino().length">
-              {{ salvando() ? 'Processando...' : 'Confirmar transferência fictícia' }}
+              {{ salvando() ? 'Processando...' : 'Revisar transferência fictícia' }}
             </button>
           </form>
         </section>
@@ -399,7 +399,7 @@
           <div class="section-heading"><div><div class="eyebrow">PAGAMENTO DE TESTE</div>
             <h2>Pagamento de boleto fictício</h2>
             <p>Registre o favorecido, vencimento e referência demonstrativa.</p></div></div>
-          <form (submit)="$event.preventDefault(); pagar()" class="stack-form">
+          <form (submit)="$event.preventDefault(); revisarPagamento()" class="stack-form">
             <div class="field"><label for="payee">Favorecido fictício *</label>
               <input id="payee" name="payee" [(ngModel)]="bill.payee" placeholder="Ex.: Energia Demonstração" maxlength="100" required>
             </div>
@@ -415,7 +415,7 @@
               <input id="bill-reference" name="billReference" [(ngModel)]="bill.reference" placeholder="DEMO-BOLETO-123" maxlength="80" required>
             </div>
             <div class="info-strip">Não informe códigos de barras reais. O lançamento produz somente um débito fictício.</div>
-            <button class="button button-primary" type="submit" [disabled]="salvando()">Pagar boleto de demonstração</button>
+            <button class="button button-primary" type="submit" [disabled]="salvando()">Revisar pagamento fictício</button>
           </form>
         </section>
         <aside class="panel mini-aside"><div class="card-icon">▤</div>
@@ -608,15 +608,37 @@
             <p class="form-note">Os limites são orientativos e não bloqueiam pagamentos.</p>
           </section>
         </div>
-        <h3>Histórico por mês</h3>
-        <div class="history-months">
-          @for(m of analise()?.history??[];track m.month){
-            <div><strong>{{ m.month }}</strong>
-              <span class="positive">+ {{ dinheiro(m.incomeCents) }}</span>
-              <span class="negative">− {{ dinheiro(m.expenseCents) }}</span>
-            </div>
-          } @empty {<p class="empty">Não há dados para análise.</p>}
+        <div class="chart-heading">
+          <div><h3>Evolução financeira</h3><p>Comparação mensal de entradas e despesas classificadas.</p></div>
+          <div class="chart-key"><span><i class="chart-key-in"></i> Entradas</span><span><i class="chart-key-out"></i> Saídas</span></div>
         </div>
+        <div class="month-chart" role="img" aria-label="Comparação dos valores mensais de entradas e saídas, detalhados na tabela abaixo">
+          @for(m of analise()?.history??[];track m.month){
+            <div class="month-column">
+              <div class="month-bars">
+                <div class="month-bar-in" [style.height.%]="alturaGrafico(m.incomeCents)"
+                  [title]="'Entradas: '+dinheiro(m.incomeCents)"></div>
+                <div class="month-bar-out" [style.height.%]="alturaGrafico(m.expenseCents)"
+                  [title]="'Saídas: '+dinheiro(m.expenseCents)"></div>
+              </div>
+              <span>{{ m.month.slice(5,7) }}/{{ m.month.slice(2,4) }}</span>
+            </div>
+          } @empty {<p class="empty">Ainda não há lançamentos para gerar o histórico.</p>}
+        </div>
+        <div class="chart-accessible-table">
+          <table>
+            <caption>Valores exatos da evolução mensal em reais fictícios</caption>
+            <thead><tr><th>Mês</th><th>Entradas</th><th>Saídas</th><th>Resultado</th></tr></thead>
+            <tbody>
+              @for(m of analise()?.history??[];track m.month){
+                <tr><td>{{ m.month }}</td><td>{{ dinheiro(m.incomeCents) }}</td>
+                  <td>{{ dinheiro(m.expenseCents) }}</td>
+                  <td>{{ dinheiro(m.incomeCents-m.expenseCents) }}</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="chart-note">Transferências entre contas de demonstração e movimentos para metas de reserva não são contados como receitas ou gastos. Não representa um relatório bancário oficial.</p>
       </section>
     }
 
@@ -632,6 +654,43 @@
           </div>
         } @empty {<p class="empty">Nenhuma atividade recente.</p>}
       </section>
+    }
+
+
+    @if(revisao(); as r){
+      <div class="review-backdrop" role="presentation" (click)="revisao.set(null)">
+        <section class="review-dialog" role="dialog" aria-labelledby="review-title"
+          aria-describedby="review-description" (click)="$event.stopPropagation()">
+          <div class="review-top">
+            <span class="review-emblem" aria-hidden="true">✓</span>
+            <button type="button" class="review-close" (click)="revisao.set(null)" aria-label="Fechar revisão">✕</button>
+          </div>
+          <div class="eyebrow">ETAPA 2 DE 2 · CONFERÊNCIA</div>
+          <h2 id="review-title">Confira os dados da operação</h2>
+          <p id="review-description">A movimentação só será registrada após sua confirmação. Todos os valores são fictícios.</p>
+          <div class="review-amount">
+            <small>VALOR DA {{ r.tipo==='transferencia'?'TRANSFERÊNCIA':'OPERAÇÃO' }}</small>
+            <strong>{{ dinheiro(r.valorCentavos) }}</strong>
+            <span>Simulação sem movimentação de dinheiro real</span>
+          </div>
+          <dl class="review-details">
+            <div><dt>Conta de origem</dt><dd>{{ atual()?.holder }} · {{ atual()?.code }}</dd></div>
+            <div><dt>{{ r.tipo==='transferencia'?'Conta de destino':'Favorecido' }}</dt><dd>{{ r.destino }}</dd></div>
+            <div><dt>Tipo de pagamento</dt><dd>{{ r.metodo }}</dd></div>
+            <div><dt>Descrição / referência</dt><dd>{{ r.descricao }} · {{ r.referencia }}</dd></div>
+            <div><dt>Saldo disponível após</dt><dd class="review-result">{{ dinheiro(r.saldoPrevistoCentavos) }}</dd></div>
+          </dl>
+          <div class="review-warning"><span aria-hidden="true">ⓘ</span>
+            <span>Conferência visual educativa: o backend ainda verifica saldo, limites e dados antes de salvar a operação.</span>
+          </div>
+          <div class="review-actions">
+            <button type="button" class="button button-outline" (click)="revisao.set(null)">Voltar e editar</button>
+            <button type="button" class="button button-primary" [disabled]="salvando()" (click)="confirmarRevisao()">
+              {{ salvando() ? 'Registrando...' : 'Confirmar simulação' }}
+            </button>
+          </div>
+        </section>
+      </div>
     }
 
     @if(comprovante()){
