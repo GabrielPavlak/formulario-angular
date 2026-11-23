@@ -1,7 +1,7 @@
-name: Full-stack checks
+name: Banco Escola - checagens full-stack
 on:
   push:
-    branches: [feature/pesquisa-tecnologia-fullstack]
+    branches: [main,feature/banco-ficticio]
   pull_request:
     branches: [main]
 jobs:
@@ -13,9 +13,8 @@ jobs:
         with:
           node-version: '24'
           cache: npm
-      - name: Install frontend dependencies
-        run: npm ci
-      - name: Build Angular application
+      - run: npm ci
+      - name: Build Angular
         run: npm run build
-      - name: Backend Node.js tests
+      - name: Backend tests
         run: npm run test:backend
