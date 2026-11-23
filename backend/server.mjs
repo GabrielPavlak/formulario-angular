@@ -1,3 +1,4 @@
+import { installExperience,handleExperience } from './experience.mjs';
 import { installExtras, handleExtra, addAccountExtras, addEntryExtras, checkCard, categories } from './features.mjs';
 import { createServer } from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
@@ -78,6 +79,7 @@ export function openDb(path=DB_PATH,withSeed=true){
    +'CREATE INDEX IF NOT EXISTS idx_bank_entries_account_date ON bank_entries(account_id,occurred_on,id);');
   if(withSeed)seed(db);
   installExtras(db);
+  installExperience(db);
   return db;
 }
 export function accounts(db){
@@ -109,14 +111,22 @@ export function statement(db,params){
   if(!accountExists(db,id))fail('Conta não encontrada.',404);
   const from=params.get('from')??'',to=params.get('to')??'';
   const kind=params.get('kind')??'',method=params.get('method')??'';
+  const category=params.get('category')??'',search=(params.get('q')??'').trim().toLocaleLowerCase('pt-BR');
   if(from&&!validDate(from)||to&&!validDate(to)||from&&to&&from>to)fail('Período inválido.');
   if(kind&&!KINDS.includes(kind))fail('Filtro de tipo inválido.');
   if(method&&!METHODS.includes(method))fail('Filtro de pagamento inválido.');
-  const data=db.prepare('SELECT id,account_id AS accountId,kind,amount_cents AS amountCents,occurred_on AS occurredOn,method,description,reference,created_at AS createdAt FROM bank_entries WHERE account_id=? ORDER BY occurred_on,id').all(id);
+  if(category&&!categories.includes(category))fail('Filtro de categoria inválido.');
+  if(search.length>100)fail('Pesquisa longa demais.');
+  const data=db.prepare("SELECT e.id,e.account_id AS accountId,e.kind,e.amount_cents AS amountCents,"
+     +"e.occurred_on AS occurredOn,e.method,e.description,e.reference,e.created_at AS createdAt,"
+     +"COALESCE(c.category,'Outros') AS category"
+     +" FROM bank_entries e LEFT JOIN bank_entry_categories c ON c.entry_id=e.id"
+     +" WHERE e.account_id=? ORDER BY e.occurred_on,e.id").all(id);
   let balance=0;
   const all=data.map(e=>{balance+=e.kind==='entrada'?e.amountCents:-e.amountCents;return {...e,balanceAfterCents:balance};});
   const entries=all.filter(e=>(!from||e.occurredOn>=from)&&(!to||e.occurredOn<=to)
-   &&(!kind||e.kind===kind)&&(!method||e.method===method)).reverse();
+   &&(!kind||e.kind===kind)&&(!method||e.method===method)&&(!category||e.category===category)
+   &&(!search||[e.description,e.reference,e.method,e.category].some(v=>v.toLocaleLowerCase('pt-BR').includes(search)))).reverse();
   return {entries,summary:{accountId:id,balanceCents:balance,
     incomeCents:entries.filter(e=>e.kind==='entrada').reduce((s,e)=>s+e.amountCents,0),
     expenseCents:entries.filter(e=>e.kind==='saida').reduce((s,e)=>s+e.amountCents,0),count:entries.length}};
@@ -170,9 +180,9 @@ export function createApp({db,token}){
       }
       if(path==='/api/bank/statement.csv'&&method==='GET'){
         const data=statement(db,url.searchParams);
-        const header=['ID','Data','Tipo','Descrição','Forma de pagamento','Referência','Valor (R$)','Saldo após (R$)'];
+        const header=['ID','Data','Tipo','Descrição','Categoria','Forma de pagamento','Referência','Valor (R$)','Saldo após (R$)'];
         const money=cents=>(cents/100).toFixed(2).replace('.',',');
-        const rows=[header,...data.entries.map(e=>[e.id,e.occurredOn,e.kind,e.description,e.method,e.reference,
+        const rows=[header,...data.entries.map(e=>[e.id,e.occurredOn,e.kind,e.description,e.category,e.method,e.reference,
           (e.kind==='entrada'?'+':'-')+money(e.amountCents),money(e.balanceAfterCents)])];
         const csv=Buffer.from('\ufeff'+rows.map(r=>r.map(csvCell).join(';')).join('\r\n'));
         res.writeHead(200,{'Content-Type':'text/csv; charset=utf-8',
@@ -180,6 +190,7 @@ export function createApp({db,token}){
           'Content-Length':csv.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
         return res.end(csv);
       }
+      if(await handleExperience(db,req,res,path,url))return;
       if(await handleExtra(db,req,res,path,url))return;
       return respond(res,404,{error:'Rota não encontrada.'});
     }catch(err){

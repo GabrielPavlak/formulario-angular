@@ -1,7 +1,7 @@
-name: Banco Escola SuperApp - Build e Testes
+name: Banco Escola - validação full-stack
 on:
   push:
-    branches: [main,feature/banco-escola-superapp]
+    branches: [main,feature/banco-escola-experiencia-premium]
   pull_request:
     branches: [main]
 jobs:
@@ -17,5 +17,7 @@ jobs:
         run: npm ci
       - name: Angular production build
         run: npm run build
+      - name: Angular unit tests
+        run: npm test -- --watch=false
       - name: Backend and integration tests
         run: npm run test:backend

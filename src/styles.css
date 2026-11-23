@@ -1,3 +1,116 @@
+/* Banco Escola: styles globais responsivos. */
+app-root{display:block;min-height:100vh;background:#f4f7fb;color:#192c3b;font-family:Inter,'Segoe UI',Arial,sans-serif;font-size:15px}
+*{box-sizing:border-box}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:wait;opacity:.55}
+.site-header{background:#fff;border-bottom:1px solid #e6edf1}
+.header-inner{max-width:1240px;margin:auto;min-height:78px;padding:12px 24px;display:flex;align-items:center;gap:18px}
+.identity{display:flex;align-items:center;gap:13px;flex:1}
+.logo{display:grid;place-items:center;width:46px;height:46px;background:#073b46;color:#fff;border-radius:14px;font-weight:900;font-size:25px}
+.identity strong,.identity span{display:block}
+.identity strong{font-size:20px;letter-spacing:-.5px}
+.identity span{color:#7e8b99;font-size:11px;margin-top:3px}
+.demo-label{font-size:11px;color:#077c70;background:#e7f9f5;letter-spacing:1px;font-weight:750;border-radius:40px;padding:10px 14px}
+.text-action{background:transparent;border:none;color:#536674;text-decoration:underline}
+.layout{max-width:1240px;padding:28px 24px 48px;margin:auto}
+.welcome{display:grid;grid-template-columns:1.25fr .85fr;align-items:center;gap:70px;min-height:70vh}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:1.8px;color:#118779;margin-bottom:10px}
+.welcome h1{font-size:clamp(34px,4.3vw,60px);line-height:1.08;letter-spacing:-2px;max-width:670px;margin:0 0 20px}
+.welcome-copy>p{color:#647786;font-size:17px;line-height:1.7;max-width:610px}
+.capabilities{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px}
+.capabilities span{background:#e4f5f1;color:#056f63;padding:10px 13px;border-radius:10px;font-weight:650;font-size:13px}
+.login-card,.panel{background:#fff;border:1px solid #e5eaef;border-radius:20px;box-shadow:0 12px 48px rgba(24,44,66,.04)}
+.login-card{padding:36px}
+.card-icon{height:55px;width:55px;border-radius:15px;background:#eef8f6;display:grid;place-items:center;font-size:26px}
+.login-card h2{font-size:26px;letter-spacing:-.6px;margin:20px 0 7px}
+.login-card p{color:#657787;line-height:1.6;margin-bottom:24px}
+.login-card label,.field label{display:block;color:#415767;font-size:13px;font-weight:750;margin:0 0 8px}
+.login-card input,.field input,.field select,.account-bar select{width:100%;min-height:46px;border:1px solid #d6e0e7;background:#fff;color:#1c3343;border-radius:10px;padding:10px 12px;outline-offset:2px}
+.login-card input:focus,.field input:focus,.field select:focus,.account-bar select:focus{outline:2px solid #1e9c8b;border-color:#1e9c8b}
+.login-card>.button{width:100%;margin-top:16px}
+.login-card small{display:block;margin-top:19px;color:#8193a0;line-height:1.6}
+.button{border-radius:10px;padding:12px 18px;border:1px solid transparent;font-weight:750;white-space:nowrap;transition:transform .1s,background .2s}
+.button:hover:not(:disabled){transform:translateY(-1px)}
+.button-primary{background:#056d65;color:#fff}
+.button-primary:hover{background:#055c55}
+.button-light{background:#fff;color:#075d5b}
+.button-outline{color:#176f68;background:#fff;border-color:#cfe4de}
+.message{padding:14px 17px;border-radius:12px;margin:16px 0;line-height:1.5}
+.error{background:#fff0ed;border:1px solid #f8c7bf;color:#ab3325}
+.success{background:#e7f7ee;border:1px solid #b0e2cb;color:#0d704a}
+.page-heading{background:linear-gradient(115deg,#0b3440,#075b60 62%,#167d75);padding:32px;border-radius:21px;display:flex;justify-content:space-between;align-items:center;gap:20px;color:#fff;box-shadow:0 14px 35px rgba(11,52,64,.15)}
+.page-heading h1{font-size:32px;letter-spacing:-.8px;margin:0 0 8px}
+.page-heading p{color:#c1e0e0;margin:0}
+.page-heading .eyebrow{color:#83dcca}
+.account-bar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:#fff;padding:16px 20px;border-radius:14px;border:1px solid #e7edf2;margin-top:19px}
+.account-bar label{font-size:13px;color:#61727e;font-weight:750}
+.account-bar select{width:min(380px,100%);font-weight:700}
+.account-number{margin-left:auto;font-size:12px;color:#748594}
+.tabs{display:flex;gap:8px;overflow:auto;border-bottom:1px solid #e1e8ee;margin:18px 0 22px}
+.tabs button{border:0;border-bottom:3px solid transparent;background:transparent;color:#6e7e8c;font-weight:750;padding:14px 19px;white-space:nowrap}
+.tabs button:hover{color:#155e5b}
+.tabs button.active{color:#006e63;border-color:#008d80}
+.metrics{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:18px;margin-bottom:20px}
+.metric{background:#fff;border:1px solid #e5eaef;border-radius:17px;padding:25px 25px;display:flex;flex-direction:column;gap:13px}
+.metric strong{font-size:clamp(23px,2.4vw,31px);font-weight:800;letter-spacing:-1px}
+.metric small{color:#8595a2;font-size:12px}
+.metric-heading{font-size:14px;color:#647789;font-weight:650}
+.metric-top{display:flex;justify-content:space-between;font-size:14px;font-weight:650;color:#c2e6e3}
+.primary-metric{background:#0d4d51;border-color:#0d4d51;color:#fff}
+.primary-metric strong{font-size:33px}
+.primary-metric small{color:#b7dfd9}
+.positive{color:#10856b!important}
+.negative{color:#bb4650!important}
+.panel{padding:27px;margin-bottom:20px}
+.section-heading{display:flex;justify-content:space-between;gap:15px;align-items:flex-start;margin-bottom:23px}
+.section-heading h2{font-size:22px;letter-spacing:-.5px;margin:0 0 7px}
+.section-heading p{font-size:13px;color:#8192a0;margin:0}
+.recent-row{display:flex;gap:14px;align-items:center;padding:16px 0;border-top:1px solid #eff2f5}
+.movement-icon{width:40px;height:40px;background:#faecee;color:#b84750;border-radius:12px;display:grid;place-items:center;font-size:20px;font-weight:700}
+.movement-icon.in{background:#e4f5ef;color:#08866b}
+.movement-title{flex:1}
+.movement-title strong,.movement-title small{display:block}
+.movement-title small{color:#8a98a5;font-size:12px;margin-top:4px}
+.movement-value{font-weight:800}
+.mini-badge{padding:9px 12px;border-radius:30px;background:#e4f5f1;color:#057665;font-size:11px;font-weight:800}
+.type-picker{display:flex;gap:12px;margin-bottom:21px}
+.type-picker label{display:flex;align-items:center;gap:9px;flex:1;max-width:235px;padding:14px 16px;border-radius:12px;border:1px solid #d7e4e4;font-weight:700;color:#52707b;cursor:pointer}
+.type-picker label.chosen{border:2px solid #058d7c;color:#075d57;background:#ebf8f5;padding:13px 15px}
+.type-picker input{accent-color:#00826e}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:21px}
+.field small{display:block;font-size:11px;color:#8694a0;margin-top:5px}
+.field.full{grid-column:1/-1}
+.entry-footer{margin-top:25px;border-top:1px solid #e9eff1;padding-top:21px;display:flex;justify-content:space-between;align-items:center;gap:20px}
+.entry-footer p,.form-note{color:#758695;font-size:12px;line-height:1.5;max-width:440px}
+.filter-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.filter-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:20px 0}
+.filter-actions span{color:#82929e;margin-left:auto;font-size:12px}
+.table-scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-transform:uppercase;letter-spacing:1px;color:#8293a1;font-size:10px;text-align:left;padding:14px 12px;background:#f6f9fb;white-space:nowrap}
+td{padding:16px 12px;border-bottom:1px solid #eff2f5;color:#445665;vertical-align:middle}
+td strong{color:#24394a;white-space:nowrap}
+td small,td span{display:block}
+td small{margin-top:5px;color:#9aa5b0;font-size:11px}
+.kind-tag{margin-top:6px;font-size:10px;text-transform:uppercase;font-weight:800;color:#bc5359}
+.kind-tag.in{color:#10856b}
+.empty{text-align:center;color:#8595a2;padding:32px 18px}
+.account-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:18px}
+.account-item{width:100%;display:flex;align-items:center;gap:13px;text-align:left;background:#fff;border:1px solid #e5ebef;border-radius:13px;padding:17px;margin-bottom:11px}
+.account-item:hover,.account-item.selected{border-color:#078676;background:#f2fbf8}
+.avatar{display:grid;place-items:center;background:#e8f5f2;color:#147d70;font-weight:800;width:38px;height:38px;border-radius:50%}
+.account-info{flex:1;min-width:0}
+.account-info strong,.account-info small{display:block}
+.account-info strong{font-size:14px}
+.account-info small{color:#8795a0;font-size:11px;margin-top:5px}
+.account-item>strong{font-size:13px;white-space:nowrap;color:#115f54}
+.account-grid .field{margin-bottom:18px}
+.footer{color:#a2adb8;text-align:center;font-size:11px;padding:28px 0}
+@media(max-width:900px){.welcome{grid-template-columns:1fr;gap:30px;padding:25px 0}.metrics{grid-template-columns:1fr 1fr}.primary-metric{grid-column:1/-1}.filter-grid{grid-template-columns:1fr 1fr}.account-grid{grid-template-columns:1fr}.account-number{margin-left:0}}
+@media(max-width:620px){.layout{padding:16px 13px 35px}.header-inner{padding:11px 13px}.identity span{display:none}.identity strong{font-size:17px}.demo-label{font-size:9px;padding:7px 9px}.page-heading{padding:24px 19px;align-items:flex-start;flex-direction:column}.page-heading h1{font-size:26px}.account-bar{align-items:stretch}.account-bar select{width:100%}.tabs button{padding:12px 14px;font-size:12px}.metrics,.fields,.filter-grid{grid-template-columns:1fr}.primary-metric{grid-column:auto}.panel{padding:20px 16px}.entry-footer,.section-heading{flex-direction:column;align-items:stretch}.movement-value{font-size:13px}.login-card{padding:24px}.account-item>strong{font-size:12px}.type-picker label{font-size:12px}.page-heading p{line-height:1.6}}
+
+
 /* You can add global styles to this file, and also import other style files */
 
 /* Banco Escola SuperApp — novos módulos */
@@ -77,3 +190,263 @@
 .receipt-dialog pre{white-space:pre-wrap;font-family:Consolas,monospace;line-height:1.8;color:#244251;background:#f6faf8;border:1px dashed #c5ded8;padding:20px;border-radius:12px;font-size:13px}
 @media(max-width:1000px){.quick-actions{grid-template-columns:1fr 1fr}.two-col-panel{grid-template-columns:1fr}.analytics-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.primary-metric{grid-column:auto}}
 @media(max-width:680px){.quick-actions{grid-template-columns:1fr 1fr}.quick-actions button{font-size:12px;min-height:64px}.goals-metrics{grid-template-columns:1fr}.insight-metrics{grid-template-columns:1fr}.history-months{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:1fr}.schedule-line{flex-wrap:wrap}.schedule-actions{width:100%}.virtual-card{padding:21px;min-height:230px}.virtual-card>strong{font-size:19px}.stack-form .button{width:100%}}
+
+
+/* ===================================================
+   BANCO ESCOLA • FINTECH PREMIUM 2026
+   Visual original, pensado para desktop e mobile.
+   =================================================== */
+:root{color-scheme:light;--ink:#19283c;--ink-weak:#728298;--teal:#087c80;--mint:#14b8a6;--panel:#fff;--canvas:#f3f6fa;--line:#e6edf3}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--canvas);min-width:320px}
+app-root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--canvas);color:var(--ink)}
+app-root *,app-root *::before,app-root *::after{box-sizing:border-box}
+app-root button:focus-visible,app-root a:focus-visible,app-root input:focus-visible,app-root select:focus-visible,app-root summary:focus-visible{outline:3px solid #14b8a6;outline-offset:3px}
+app-root .site-header{position:sticky;top:0;z-index:80;background:#fff;border-bottom:1px solid #e4ebf1;box-shadow:0 2px 16px rgba(20,43,67,.035)}
+app-root .header-inner{max-width:none;min-height:82px;padding:13px 30px;gap:20px}
+app-root .logo{height:48px;width:48px;border-radius:14px;color:#fff;background:linear-gradient(140deg,#062943,#0d7f7d);font-size:27px;box-shadow:0 8px 18px rgba(0,109,119,.2)}
+app-root .logo-spark,app-root .brand-dot{color:#13c8ad}
+app-root .identity strong{font-size:20px;font-weight:850;letter-spacing:-.8px}
+app-root .identity span{font-size:12px;color:#8392a2}
+app-root .header-status{display:flex;align-items:center;gap:8px;color:#557b78;background:#ecfaf6;border:1px solid #d7f2e9;padding:10px 14px;border-radius:999px;font-weight:800;font-size:10px;letter-spacing:1px;white-space:nowrap}
+app-root .status-light{display:inline-block;background:#21c9a2;border-radius:50%;height:8px;width:8px;box-shadow:0 0 0 4px rgba(33,201,162,.1);flex:none}
+app-root .header-tools{display:flex;align-items:center;gap:10px}
+app-root .header-tool{position:relative;display:grid;place-items:center;height:42px;width:42px;background:#f5f8fb;border:1px solid #e6ecf2;border-radius:13px;color:#41576a;font-size:21px}
+app-root .header-tool:hover{background:#eaf7f4;border-color:#b9ddd5;color:#087c80}
+app-root .bell-dot{position:absolute;top:-4px;right:-4px;display:grid;place-items:center;border-radius:100px;background:#eb5b58;color:white;font-size:9px;font-weight:800;min-width:18px;height:18px;border:2px solid #fff}
+app-root .user-pill{display:flex;align-items:center;gap:10px;height:43px;padding:3px 12px 3px 4px;border:1px solid #e7edf2;background:#fff;border-radius:100px;color:#4a5e70;font-size:12px;font-weight:750}
+app-root .user-avatar{display:grid;place-items:center;background:linear-gradient(145deg,#0b7880,#1fc7ab);color:#fff;width:33px;height:33px;border-radius:50%;font-weight:850}
+app-root .layout.logged-in{display:grid;grid-template-columns:258px minmax(0,1fr);max-width:none;margin:0;padding:0;min-height:calc(100vh - 82px);gap:0}
+app-root .bank-sidebar{height:calc(100vh - 82px);position:sticky;top:82px;overflow:auto;background:linear-gradient(155deg,#0d2436 0%,#102f43 70%,#103b48 100%);color:#dceaf2;padding:27px 17px 20px;scrollbar-width:thin;scrollbar-color:#375968 transparent}
+app-root .sidebar-customer{display:flex;align-items:center;gap:12px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09);padding:14px 11px;border-radius:14px;margin-bottom:26px;min-width:0}
+app-root .sidebar-avatar{display:grid;place-items:center;flex:none;height:42px;width:42px;border-radius:14px;color:#064b46;background:#a3f0d8;font-weight:900;font-size:17px}
+app-root .sidebar-customer>div{min-width:0}
+app-root .sidebar-customer strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+app-root .sidebar-customer small{display:block;color:#a3b8c7;font-size:10px;margin-top:5px}
+app-root .sidebar-label{font-size:9px;letter-spacing:1.5px;font-weight:900;color:#90a9b8;margin:0 12px 12px}
+app-root .sidebar-label.nested{margin-top:24px}
+app-root .sidebar-menu{display:flex;flex-direction:column;gap:4px}
+app-root .sidebar-menu button{display:flex;align-items:center;gap:12px;width:100%;padding:10px 12px;min-height:43px;text-align:left;border:1px solid transparent;border-radius:11px;background:transparent;color:#b9d0dc;font-size:12px;font-weight:700;line-height:1.3}
+app-root .sidebar-menu button:hover{background:rgba(255,255,255,.08);color:#fff}
+app-root .sidebar-menu button.active{background:rgba(34,195,165,.16);border-color:rgba(82,216,183,.22);color:#b4ffe8}
+app-root .side-icon{display:grid;place-items:center;width:23px;height:24px;color:#b6d5db;font-weight:800;font-size:19px;flex:none}
+app-root .sidebar-menu button.active .side-icon{color:#60edc7}
+app-root .sidebar-footer{margin-top:32px;padding:14px 12px 0;border-top:1px solid rgba(255,255,255,.1)}
+app-root .sidebar-shield{color:#6ee7c4;font-size:11px;font-weight:800;margin-bottom:10px}
+app-root .sidebar-footer small{display:block;color:#88a5b4;font-size:10px;line-height:1.7}
+app-root .sidebar-footer button{border:1px solid rgba(255,255,255,.15);background:transparent;color:#c6dbdf;border-radius:9px;padding:10px 13px;margin-top:13px;font-size:12px;font-weight:750;width:100%;text-align:left}
+app-root .sidebar-footer button:hover{background:rgba(255,255,255,.1)}
+app-root .bank-content{width:100%;max-width:1540px;margin:0 auto;min-width:0;padding:28px 32px 65px}
+app-root .logged-in .page-heading{background:transparent;border:0;box-shadow:none;border-radius:0;color:var(--ink);padding:0;margin:0 0 20px;align-items:center}
+app-root .logged-in .page-heading h1{font-size:clamp(23px,2.5vw,33px);color:var(--ink);font-weight:860;letter-spacing:-1.1px;margin:0 0 7px}
+app-root .logged-in .page-heading p{font-size:13px;color:#788b9a;margin:0;line-height:1.5}
+app-root .logged-in .page-heading .eyebrow{color:#8293a3;margin-bottom:8px;text-transform:capitalize;font-size:11px;letter-spacing:.2px}
+app-root .heading-actions{display:flex;align-items:center;gap:14px}
+app-root .demo-chip{display:flex;align-items:center;gap:9px;white-space:nowrap;font-size:11px;color:#247764;background:#e7f7f1;border:1px solid #d0eee3;border-radius:9px;padding:11px 12px;font-weight:800}
+app-root .button-primary{background:#087d79;border-color:#087d79;box-shadow:0 4px 14px rgba(8,125,121,.14)}
+app-root .button-primary:hover{background:#056765}
+app-root .button{border-radius:10px}
+app-root .logged-in .account-bar{display:flex;align-items:center;justify-content:space-between;gap:14px;background:#fff;border:1px solid #e2eaf0;border-radius:14px;padding:15px 22px;margin:0 0 24px;box-shadow:0 3px 12px rgba(28,61,89,.02)}
+app-root .account-field{display:flex;align-items:center;gap:12px}
+app-root .account-field label{font-size:10px;letter-spacing:1px;color:#8ba0ae;font-weight:850;white-space:nowrap}
+app-root .account-field select{min-width:250px;max-width:380px;border:1px solid #e5edf1;background:#f7fafb;color:#234759;font-size:12px;padding:10px 12px;border-radius:9px;min-height:39px;font-weight:750}
+app-root .account-identity{display:flex;align-items:center;gap:13px}
+app-root .account-identity>span{font-size:11px;color:#7b91a1;font-weight:700}
+app-root .copy-button{border:0;background:transparent;color:#087e78;font-size:11px;font-weight:800;white-space:nowrap}
+app-root .bottom-nav{display:none}
+app-root .bank-hero-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(260px,.83fr);gap:17px;margin-bottom:28px}
+app-root .bank-balance-hero{position:relative;overflow:hidden;isolation:isolate;min-height:245px;border-radius:20px;padding:24px 30px;color:#fff;background:linear-gradient(115deg,#103849 0%,#086d73 62%,#149a89 110%);box-shadow:0 18px 35px rgba(11,89,100,.12)}
+app-root .hero-top{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:28px;color:#b9e7e2;font-size:10px;font-weight:850;letter-spacing:1px;z-index:1;position:relative}
+app-root .hero-top span{display:flex;align-items:center;gap:9px}
+app-root .hero-live{display:block;height:7px;width:7px;border-radius:50%;background:#81f5cc}
+app-root .hero-balance-label{position:relative;z-index:1;display:flex;align-items:center;gap:12px;color:#d0eeec;font-size:13px}
+app-root .eye-button{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.2);border-radius:50px;color:#e8fffc;font-size:11px;padding:6px 10px}
+app-root .hero-balance{position:relative;z-index:1;margin-top:8px;color:#fff;font-size:clamp(29px,4vw,44px);font-weight:860;letter-spacing:-1.7px;line-height:1.15}
+app-root .bank-balance-hero>p{position:relative;z-index:1;font-size:11px;color:#bee5e3;margin:9px 0 25px}
+app-root .hero-bottom{position:relative;z-index:1;display:flex;gap:45px;margin-top:auto}
+app-root .hero-bottom div{display:flex;flex-direction:column;gap:4px}
+app-root .hero-bottom small{color:#b9e5e0;font-size:10px}
+app-root .hero-bottom strong{color:#fff;font-size:12px;letter-spacing:.2px}
+app-root .hero-art>div{position:absolute;z-index:0;border-radius:50%;border:1px solid rgba(255,255,255,.13);width:400px;height:400px;right:-145px;top:-230px}
+app-root .hero-art>div+div{width:330px;height:330px;right:-175px;top:90px;background:radial-gradient(circle at center,rgba(255,255,255,.1),transparent 70%)}
+app-root .bank-mini-card{position:relative;overflow:hidden;display:flex;flex-direction:column;border-radius:20px;padding:24px 24px 0;background:linear-gradient(145deg,#141e3a 0%,#253960 70%,#264f69);color:#fff;min-height:245px;box-shadow:0 18px 35px rgba(18,34,64,.11)}
+app-root .bank-mini-card:before{content:'';position:absolute;width:270px;height:270px;right:-150px;top:-95px;border-radius:50%;border:48px solid rgba(255,255,255,.03)}
+app-root .mini-topline{display:flex;justify-content:space-between;align-items:center;font-size:10px;font-weight:900;letter-spacing:.7px;color:#e8edfa;gap:7px}
+app-root .mini-topline>span+span{font-size:9px;color:#a3b5d4}
+app-root .bank-chip{font-size:28px;color:#e4c895;margin:22px 0 8px}
+app-root .mini-card-number{font-size:19px;letter-spacing:2px;font-weight:780}
+app-root .mini-card-bottom{display:flex;justify-content:space-between;gap:12px;font-size:10px;text-transform:uppercase;letter-spacing:1px;color:#c5d2e9;margin-top:20px}
+app-root .card-open{margin:19px -24px 0;padding:12px 23px;border:0;border-top:1px solid rgba(255,255,255,.15);color:#c9f6ef;text-align:left;background:rgba(0,0,0,.12);font-size:12px;font-weight:800}
+app-root .card-open:hover{background:rgba(255,255,255,.08)}
+app-root .home-section-label{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:0 0 14px}
+app-root .home-section-label h2{font-size:18px;font-weight:850;margin:0}
+app-root .home-section-label span{font-size:12px;color:#98a9b8}
+app-root .quick-actions{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:13px;margin-bottom:22px}
+app-root .quick-actions button{display:flex;flex-direction:column;gap:5px;justify-content:center;align-items:flex-start;border-radius:15px;background:#fff;border:1px solid #e7eef3;box-shadow:0 3px 10px rgba(25,57,83,.025);padding:18px 15px;min-height:129px;white-space:normal}
+app-root .quick-actions button:hover{border-color:#8bcfc0;background:#f8fefd;box-shadow:0 8px 24px rgba(14,108,105,.08)}
+app-root .quick-actions .quick-glyph{display:grid;place-items:center;width:42px;height:42px;border-radius:13px;background:#e5f7f1;color:#087e74;font-size:23px;margin-bottom:8px}
+app-root .quick-actions button:nth-child(2) .quick-glyph{color:#7255a6;background:#f0eafd}
+app-root .quick-actions button:nth-child(3) .quick-glyph{color:#266ab4;background:#e9f2ff}
+app-root .quick-actions button:nth-child(4) .quick-glyph{color:#af7b1b;background:#fff4dc}
+app-root .quick-actions button:nth-child(5) .quick-glyph{color:#347587;background:#e7f5f9}
+app-root .quick-actions button:nth-child(6) .quick-glyph{color:#5e6b84;background:#edf1f7}
+app-root .quick-actions strong{font-size:13px;color:#293b4c;font-weight:800}
+app-root .quick-actions small{font-size:10px;color:#91a0ad}
+app-root .dashboard-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:0 0 22px}
+app-root .dashboard-metrics .metric{background:#fff;border:1px solid #e6edf3;border-radius:16px;padding:20px 23px;gap:9px;box-shadow:0 4px 15px rgba(25,57,83,.025)}
+app-root .dashboard-metrics .metric strong{font-size:clamp(19px,2.3vw,27px);letter-spacing:-.75px;color:#1c374a}
+app-root .dashboard-metrics .metric small{font-size:10px}
+app-root .bank-home-bottom{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(285px,.9fr);gap:18px;align-items:start}
+app-root .bank-home-bottom .panel{margin:0;padding:25px}
+app-root .home-side-stack{display:flex;flex-direction:column;gap:18px}
+app-root .panel{border:1px solid #e6edf3;border-radius:18px;box-shadow:0 5px 20px rgba(24,47,72,.025)}
+app-root .section-heading h2{font-size:19px;letter-spacing:-.6px;color:#1c3143}
+app-root .section-heading p{color:#91a0ae}
+app-root .home-transaction-button{display:flex;width:100%;text-align:left;background:transparent;cursor:pointer;border-left:none;border-right:none;border-bottom:none}
+app-root .home-transaction-button:hover{background:#f8fcfa}
+app-root .home-transactions .section-heading{margin-bottom:17px}
+app-root .home-transactions .movement-icon{border-radius:50%;height:40px;width:40px}
+app-root .home-transactions .movement-value{white-space:nowrap;font-size:12px}
+app-root .category-mini{margin:17px 0}
+app-root .category-mini>div:first-child{display:flex;justify-content:space-between;font-size:11px;margin-bottom:9px;gap:10px}
+app-root .category-mini strong{color:#536a77;font-weight:750}
+app-root .category-mini span{font-weight:800;color:#29495a}
+app-root .category-mini .progress-track{height:7px}
+app-root .home-pending button{display:flex;align-items:center;gap:12px;width:100%;text-align:left;border:none;border-top:1px solid #eef1f4;background:none;padding:14px 0}
+app-root .home-pending button:hover{color:#087c80}
+app-root .home-pending button>span{display:grid;place-items:center;background:#e6f6f3;color:#087c80;height:40px;width:40px;border-radius:12px;font-size:20px}
+app-root .home-pending button div{display:flex;flex-direction:column;gap:4px}
+app-root .home-pending button strong{font-size:12px}
+app-root .home-pending button small{color:#97a6b1;font-size:11px}
+app-root .account-grid{gap:18px}
+app-root .search-bar{display:flex;align-items:center;gap:12px;background:#f7fafb;padding:8px 10px 8px 16px;border:1px solid #e2ebf0;border-radius:12px;margin:0 0 20px}
+app-root .search-bar>span{font-size:24px;color:#82a7a6}
+app-root .search-bar input{background:transparent;border:0;outline:0;min-height:34px;width:100%;flex:1;color:#2c4757;font-size:13px;min-width:0}
+app-root .search-bar:focus-within{border-color:#0e9282;box-shadow:0 0 0 3px rgba(14,146,130,.1)}
+app-root .search-bar .button{padding:10px 16px}
+app-root .filter-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:12px}
+app-root .category-label{font-size:10px!important;color:#8999a6!important;white-space:normal}
+app-root .favorite-container{margin:-5px 0 22px}
+app-root .favorite-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:11px}
+app-root .favorite-head h3{font-size:14px;margin:0;color:#2d4a56}
+app-root .favorite-head small{font-size:11px;color:#96a4aa}
+app-root .favorite-pills{display:flex;gap:10px;overflow-x:auto;padding:3px 0 5px}
+app-root .favorite-pills button{border:1px solid #e2eced;border-radius:13px;padding:11px;background:#f9fcfc;display:flex;align-items:center;gap:9px;flex-shrink:0;color:#3f5d65}
+app-root .favorite-pills button.selected{border-color:#11a38e;background:#e9f8f3}
+app-root .favorite-pills button span{display:grid;place-items:center;height:25px;width:25px;border-radius:50%;background:#cdeee5;color:#07786d;font-weight:850}
+app-root .favorite-pills button strong{font-size:11px;max-width:135px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+app-root .favorite-pills>small{font-size:11px;color:#87959e;padding:12px 0}
+app-root .form-inline-actions{display:flex;align-items:center;gap:10px;margin-top:8px}
+app-root .form-inline-actions span{color:#90a0aa;font-size:11px}
+app-root .limits-inline{border-top:1px solid #e1efea;display:grid;grid-template-columns:1fr auto;gap:12px 8px;margin-top:25px;padding-top:20px;align-items:center}
+app-root .limits-inline strong{font-size:11px;color:#46616c}
+app-root .limits-inline span{font-size:11px;font-weight:800;color:#087c80}
+app-root .limits-inline button{grid-column:1/-1;text-align:left}
+app-root .services-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+app-root .services-grid button{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:9px;background:#fff;border:1px solid #e4edf1;padding:20px;border-radius:15px}
+app-root .services-grid button:hover{background:#f2fbf8;border-color:#7dd4bf}
+app-root .services-grid button>span{display:grid;place-items:center;width:43px;height:43px;border-radius:12px;background:#e6f7f1;color:#078575;font-weight:900;font-size:22px}
+app-root .services-grid button strong{font-size:13px;color:#294455}
+app-root .services-grid button small{font-size:11px;color:#8799a5;line-height:1.6}
+app-root .settings-item{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 0;border-top:1px solid #ecf0f4}
+app-root .settings-item strong{font-size:14px;color:#2d4556}
+app-root .settings-item p{font-size:12px;color:#8495a3;margin:7px 0;line-height:1.5}
+app-root .switch-button{padding:10px 14px;white-space:nowrap;background:#e9f7f0;color:#13846f;border:1px solid #addfca;border-radius:50px;font-size:12px;font-weight:800}
+app-root .limit-progress{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 20px}
+app-root .limit-progress>div{background:#f5faf9;border:1px solid #e3f1ec;border-radius:12px;padding:15px}
+app-root .limit-progress small{display:block;color:#8ca09e;font-size:11px;margin-bottom:9px}
+app-root .limit-progress strong{font-size:19px;color:#0c726a}
+app-root .notification-item{display:flex;align-items:center;gap:14px;width:100%;padding:17px 0;border:0;border-top:1px solid #edf1f3;background:transparent;text-align:left}
+app-root .notification-item:hover{background:#f8fcfb}
+app-root .notif-symbol{display:grid;place-items:center;background:#fff5df;color:#b8842c;border-radius:12px;width:40px;height:40px;flex:none;font-size:20px}
+app-root .notification-item>span:nth-child(2){flex:1;min-width:0}
+app-root .notification-item strong,app-root .notification-item small{display:block}
+app-root .notification-item strong{font-size:12px}
+app-root .notification-item small{font-size:11px;color:#8ea0ac;line-height:1.7;margin-top:5px}
+app-root .notification-arrow{font-size:25px;color:#94a6b2}
+app-root .help-panel>h2{font-size:25px;color:#203548;margin:8px 0}
+app-root .help-panel>p{font-size:14px;color:#667f8e;line-height:1.8;max-width:770px}
+app-root .help-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:26px 0 34px}
+app-root .help-grid>div{padding:23px;background:#f7fafb;border:1px solid #e6edf2;border-radius:14px}
+app-root .help-grid span{color:#0ca18b;font-weight:900;font-size:23px}
+app-root .help-grid h3{font-size:15px;margin:8px 0}
+app-root .help-grid p{font-size:12px;line-height:1.6;color:#8093a0}
+app-root .help-panel details{border-top:1px solid #e7edf1;padding:16px 5px;color:#314a5b}
+app-root .help-panel summary{cursor:pointer;font-size:13px;font-weight:800}
+app-root .help-panel details p{font-size:12px;line-height:1.7;color:#6f8794;padding:5px 3px}
+app-root .footer{margin-top:15px;color:#98a9b5}
+app-root .logged-in .message{margin:0 0 18px;border-radius:12px}
+@media(max-width:1450px){
+ app-root .quick-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+ app-root .quick-actions button{min-height:108px}
+ app-root .bank-home-bottom{grid-template-columns:minmax(0,1.25fr) minmax(265px,.9fr)}
+ app-root .filter-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:1120px){
+ app-root .layout.logged-in{grid-template-columns:1fr}
+ app-root .bank-sidebar{display:none}
+ app-root .bank-content{padding:25px 22px 110px}
+ app-root .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:75;display:flex;align-items:center;justify-content:space-evenly;gap:2px;min-height:69px;padding:5px 10px calc(5px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid #dfe8eb;box-shadow:0 -5px 25px rgba(24,49,64,.08)}
+ app-root .bottom-nav button{min-width:56px;min-height:58px;display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:2px;background:transparent;border:0;border-radius:11px;color:#8b9aab;font-size:10px;font-weight:800}
+ app-root .bottom-nav button>span{font-size:23px;line-height:1.1}
+ app-root .bottom-nav button.active{color:#078879;background:#e8f7f2}
+ app-root .bank-hero-grid{grid-template-columns:1.2fr .8fr}
+}
+@media(max-width:780px){
+ app-root .header-inner{min-height:68px;padding:10px 16px}
+ app-root .identity strong{font-size:18px}
+ app-root .header-status{display:none}
+ app-root .user-pill{padding:2px;border:0}
+ app-root .user-pill>span+span{display:none}
+ app-root .header-tools{gap:5px}
+ app-root .header-tool{height:38px;width:38px;font-size:19px}
+ app-root .bank-content{padding:20px 15px 115px}
+ app-root .logged-in .page-heading{align-items:flex-start;flex-direction:row}
+ app-root .heading-actions .demo-chip{display:none}
+ app-root .bank-hero-grid{grid-template-columns:1fr}
+ app-root .bank-mini-card{min-height:212px;max-width:none}
+ app-root .logged-in .account-bar{flex-direction:column;align-items:stretch;padding:13px 15px}
+ app-root .account-field{justify-content:space-between}
+ app-root .account-field select{min-width:0;width:70%;max-width:none}
+ app-root .account-identity{justify-content:space-between}
+ app-root .quick-actions{grid-template-columns:repeat(3,minmax(0,1fr))}
+ app-root .dashboard-metrics{grid-template-columns:1fr 1fr}
+ app-root .bank-home-bottom{grid-template-columns:1fr}
+ app-root .filter-grid{grid-template-columns:1fr 1fr}
+ app-root .services-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-width:480px){
+ app-root .header-inner{gap:5px}
+ app-root .identity{gap:8px}
+ app-root .identity strong{font-size:16px}
+ app-root .identity>div>span{display:none}
+ app-root .logo{width:38px;height:38px;font-size:23px;border-radius:12px}
+ app-root .header-tool{height:35px;width:35px}
+ app-root .user-avatar{width:30px;height:30px}
+ app-root .logged-in .page-heading h1{font-size:26px}
+ app-root .logged-in .page-heading p{font-size:11px}
+ app-root .heading-actions>.button{font-size:11px;padding:11px}
+ app-root .bank-balance-hero{min-height:244px;padding:22px}
+ app-root .hero-balance{font-size:33px}
+ app-root .hero-top{font-size:9px;margin-bottom:34px}
+ app-root .hero-bottom{gap:20px;flex-wrap:wrap}
+ app-root .bank-mini-card{min-height:220px}
+ app-root .quick-actions{gap:8px}
+ app-root .quick-actions button{padding:11px 9px;min-height:106px;border-radius:13px}
+ app-root .quick-actions .quick-glyph{width:38px;height:38px;font-size:20px}
+ app-root .quick-actions button strong{font-size:12px}
+ app-root .quick-actions button small{font-size:9px}
+ app-root .dashboard-metrics{grid-template-columns:1fr}
+ app-root .dashboard-metrics .metric{padding:17px}
+ app-root .bank-home-bottom .panel{padding:19px 15px}
+ app-root .filter-grid{grid-template-columns:1fr}
+ app-root .search-bar{gap:6px}
+ app-root .search-bar .button{padding:9px;font-size:11px}
+ app-root .services-grid{gap:9px}
+ app-root .services-grid button{padding:15px 12px}
+ app-root .services-grid button small{font-size:10px}
+ app-root .help-grid{grid-template-columns:1fr}
+ app-root .limit-progress{grid-template-columns:1fr}
+ app-root .footer{font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){app-root *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}

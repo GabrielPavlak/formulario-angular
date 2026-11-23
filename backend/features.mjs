@@ -1,3 +1,4 @@
+import { checkTransferLimits } from './experience.mjs';
 // Módulos avançados do Banco Escola. NÃO conecta instituições financeiras.
 // Usa o mesmo banco SQLite e razão de lançamentos do simulador original.
 import { randomUUID } from 'node:crypto';
@@ -89,6 +90,7 @@ function transfer(db,payload) {
      return {id:prior.id,duplicated:true,fromBalanceCents:money(db,fromAccountId),toBalanceCents:money(db,toAccountId)};
    }
    const from=account(db,fromAccountId),to=account(db,toAccountId);
+   checkTransferLimits(db,from.id,cents);
    const out=debit(db,from.id,cents,method,'Para '+to.holder+': '+description,'Transferências',requestKey,requestKey);
    const into=credit(db,to.id,cents,method,'De '+from.holder+': '+description,'Transferências',requestKey,requestKey);
    const result=db.prepare('INSERT INTO bank_transfers(request_key,from_account_id,to_account_id,amount_cents,method,description,out_entry_id,in_entry_id,created_at) VALUES(?,?,?,?,?,?,?,?,?)')
