@@ -1,3 +1,4 @@
+import { installExtras, handleExtra, addAccountExtras, addEntryExtras, checkCard, categories } from './features.mjs';
 import { createServer } from 'node:http';
 import { DatabaseSync } from 'node:sqlite';
 import { mkdirSync } from 'node:fs';
@@ -76,6 +77,7 @@ export function openDb(path=DB_PATH,withSeed=true){
    +"CREATE TABLE IF NOT EXISTS bank_entries (id INTEGER PRIMARY KEY AUTOINCREMENT,account_id INTEGER NOT NULL REFERENCES bank_accounts(id),kind TEXT NOT NULL CHECK(kind IN ('entrada','saida')),amount_cents INTEGER NOT NULL CHECK(amount_cents>0),occurred_on TEXT NOT NULL,method TEXT NOT NULL,description TEXT NOT NULL,reference TEXT NOT NULL DEFAULT '',created_at TEXT NOT NULL);"
    +'CREATE INDEX IF NOT EXISTS idx_bank_entries_account_date ON bank_entries(account_id,occurred_on,id);');
   if(withSeed)seed(db);
+  installExtras(db);
   return db;
 }
 export function accounts(db){
@@ -152,11 +154,20 @@ export function createApp({db,token}){
       if(path==='/api/bank/accounts'&&method==='GET')return respond(res,200,{accounts:accounts(db)});
       if(path==='/api/bank/accounts'&&method==='POST'){
         const {holder}=validateAccount(await readJson(req));
-        return respond(res,201,{account:insertAccount(db,holder)});
+        const account=insertAccount(db,holder);
+        addAccountExtras(db,account.id);
+        return respond(res,201,{account});
       }
       if(path==='/api/bank/entries'&&method==='GET')return respond(res,200,statement(db,url.searchParams));
-      if(path==='/api/bank/entries'&&method==='POST')
-        return respond(res,201,{message:'Movimentação fictícia registrada.',...createEntry(db,await readJson(req))});
+      if(path==='/api/bank/entries'&&method==='POST'){
+        const data=await readJson(req);
+        const category=data.category??'Outros';
+        if(!categories.includes(category))return respond(res,400,{error:'Categoria inválida.'});
+        checkCard(db,data.accountId,data.method,data.kind);
+        const entry=createEntry(db,data);
+        addEntryExtras(db,entry.id,data.accountId,category);
+        return respond(res,201,{message:'Movimentação fictícia registrada.',...entry});
+      }
       if(path==='/api/bank/statement.csv'&&method==='GET'){
         const data=statement(db,url.searchParams);
         const header=['ID','Data','Tipo','Descrição','Forma de pagamento','Referência','Valor (R$)','Saldo após (R$)'];
@@ -169,9 +180,10 @@ export function createApp({db,token}){
           'Content-Length':csv.length,'Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});
         return res.end(csv);
       }
+      if(await handleExtra(db,req,res,path,url))return;
       return respond(res,404,{error:'Rota não encontrada.'});
     }catch(err){
-      const status=err instanceof HttpError?err.status:500;
+      const status=Number.isInteger(err?.status)&&err.status>=400&&err.status<600?err.status:500;
       if(status===500)console.error('Falha interna:',err);
       return respond(res,status,{error:status===500?'Falha interna do servidor.':err.message});
     }
