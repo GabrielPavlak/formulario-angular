@@ -269,7 +269,7 @@ export async function handleExtra(db,req,res,path,url){
   }
   return reply(res,404,{error:'Operação não encontrada.'}),true;
  }catch(error){
-  const status=error instanceof FError?error.status:500;
+  const status=Number.isInteger(error?.status)&&error.status>=400&&error.status<600?error.status:500;
   if(status===500)console.error('Falha em banco avançado:',error);
   reply(res,status,{error:status===500?'Falha interna.':error.message});
   return true;

@@ -54,7 +54,7 @@ test('transferência sem saldo recusa os dois lançamentos',async t=>{
   const {db,call}=await setup(t);
   const start1=accounts(db)[0].balanceCents,start2=accounts(db)[1].balanceCents;
   const result=await call('POST','/api/bank/transfer',{fromAccountId:1,toAccountId:2,
-    amountCents:9000000,method:'PIX simulado',description:'Teste sem saldo',
+    amountCents:900000,method:'PIX simulado',description:'Teste sem saldo',
     requestKey:'chave-de-transferencia-invalida'});
   assert.equal(result.status,422);
   assert.equal(accounts(db)[0].balanceCents,start1);
