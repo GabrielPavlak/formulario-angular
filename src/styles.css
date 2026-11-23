@@ -1,1 +1,79 @@
 /* You can add global styles to this file, and also import other style files */
+
+/* Banco Escola SuperApp — novos módulos */
+.quick-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 19px}
+.quick-actions button{display:flex;align-items:center;gap:11px;justify-content:center;background:#fff;border:1px solid #e1e9ed;border-radius:14px;color:#0d4e50;font-weight:750;padding:18px 11px;min-height:70px}
+.quick-actions button:hover{border-color:#0e8d7c;background:#f3fbf8}
+.quick-actions span{font-size:22px;font-weight:800;color:#0b8f7f}
+.two-col-panel{display:grid;grid-template-columns:minmax(0,1.65fr) minmax(270px,.7fr);gap:20px}
+.stack-form{display:flex;flex-direction:column;gap:17px}
+.stack-form .button{align-self:flex-start}
+.info-strip{border:1px solid #d6e9ee;color:#4f6e7d;background:#f2f8fb;padding:13px 15px;border-radius:11px;font-size:12px;line-height:1.55}
+.mini-aside{align-self:start;background:linear-gradient(165deg,#eafaf7,#fff);padding:25px!important}
+.mini-aside h3{font-size:20px;margin:14px 0 7px}
+.mini-aside p{line-height:1.7;color:#4d6975}
+.mini-aside small{color:#738b98;line-height:1.6;display:block}
+.mini-aside p span{font-size:12px;color:#8a9ca6}
+.aside-saldo{font-size:32px;font-weight:850;color:#086e65;margin:22px 0}
+.schedule-line{display:flex;gap:15px;align-items:center;border-top:1px solid #e9eff1;padding:18px 0}
+.schedule-date{font-size:12px;min-width:100px}
+.schedule-date strong,.schedule-date small,.schedule-info strong,.schedule-info small{display:block}
+.schedule-date small,.schedule-info small{color:#87949f;margin-top:5px}
+.schedule-info{flex:1;min-width:0}
+.schedule-actions{display:flex;gap:12px;flex-wrap:wrap}
+.table-link{background:none;border:none;color:#0a8579;font-size:12px;font-weight:750;text-decoration:underline;padding:4px}
+.table-link:hover{color:#07534c}
+.table-link.danger{color:#b5444f}
+.status-tag{display:inline-block;margin-top:7px;border-radius:99px;background:#fff4e0;color:#9d6d20;font-size:10px;font-weight:800;text-transform:uppercase;padding:4px 9px}
+.status-tag.done{background:#e4f7ed;color:#19764c}
+.goals-metrics{grid-template-columns:1fr 1fr}
+.goals-metrics .primary-metric{grid-column:auto}
+.goal-item{border:1px solid #e7edef;border-radius:14px;padding:17px;margin:0 0 12px}
+.goal-head,.bar-head{display:flex;justify-content:space-between;gap:14px;align-items:center}
+.goal-head{margin-bottom:13px}
+.goal-head strong{font-size:14px}
+.goal-head span{font-size:12px;color:#62808a}
+.goal-item small{display:block;color:#90a0a9;font-size:11px;margin-top:8px}
+.progress-track{background:#e9f0f2;border-radius:999px;height:10px;overflow:hidden;width:100%}
+.progress-fill{background:linear-gradient(90deg,#0b8576,#45c3a9);height:100%;border-radius:999px;transition:width .2s}
+.subpanel{padding:20px;background:#f7fafb;border:1px solid #e7edef;border-radius:13px;margin-top:24px}
+.subpanel h3{margin:0 0 20px;font-size:17px}
+.virtual-card{max-width:460px;min-height:240px;padding:27px;border-radius:20px;background:linear-gradient(125deg,#052e3b 0%,#07565d 65%,#167e77 100%);color:#fff;box-shadow:0 18px 35px rgba(5,50,61,.19)}
+.virtual-card.card-blocked{filter:grayscale(1);opacity:.78}
+.virtual-top,.virtual-bottom{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.virtual-top span:first-child{font-size:18px;font-weight:800}
+.virtual-top span:last-child{font-size:10px;letter-spacing:1px;color:#bfe9e2;font-weight:700}
+.virtual-chip{margin:28px 0 12px;color:#e7cb91;font-size:32px}
+.virtual-card>strong{letter-spacing:2.5px;font-size:23px}
+.virtual-bottom{margin-top:24px;text-transform:uppercase;font-size:11px;letter-spacing:.8px}
+.card-footer{display:flex;gap:20px;align-items:center;flex-wrap:wrap;margin:21px 0}
+.card-footer p{font-size:13px;color:#5a7180;flex:1;line-height:1.6}
+.security-item{display:flex;gap:13px;padding:16px 0;border-top:1px solid #e7edef}
+.security-icon{height:30px;width:30px;border-radius:50%;background:#def5eb;color:#0a806b;display:grid;place-items:center;font-weight:800}
+.security-item strong,.security-item small{display:block}
+.security-item small{color:#8897a1;margin-top:5px;line-height:1.6}
+.month-field{width:180px}
+.insight-metrics{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:22px 0}
+.insight-metrics>div{background:#f5f9fa;border:1px solid #e9eff1;border-radius:14px;padding:20px}
+.insight-metrics span,.insight-metrics strong{display:block}
+.insight-metrics span{font-size:12px;color:#7c8e9a;margin-bottom:11px}
+.insight-metrics strong{font-size:23px;letter-spacing:-.5px}
+.analytics-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:23px;margin:20px 0 30px}
+.analytics-grid h3{margin:0 0 21px}
+.analytics-grid .subpanel{margin:0}
+.bar-row{margin:18px 0}
+.bar-head{font-size:12px;margin-bottom:8px}
+.bar-head span{font-size:11px;color:#748c96;text-align:right}
+.history-months{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.history-months>div{background:#f7fafb;border:1px solid #e8eff0;border-radius:11px;padding:14px}
+.history-months strong,.history-months span{display:block;margin-bottom:8px;font-size:12px}
+.activity-item{display:flex;gap:15px;padding:15px 0;border-top:1px solid #ecf0f2}
+.activity-dot{width:12px;height:12px;flex:none;border-radius:50%;background:#0b937e;margin-top:5px;box-shadow:0 0 0 4px #def4ed}
+.activity-item strong{font-size:12px;letter-spacing:.3px}
+.activity-item p{margin:7px 0;color:#587180;font-size:13px}
+.activity-item small{color:#94a2ac}
+.receipt-overlay{position:fixed;z-index:999;inset:0;background:rgba(13,30,42,.65);display:flex;justify-content:center;align-items:center;padding:20px}
+.receipt-dialog{background:white;padding:28px;border-radius:19px;box-shadow:0 30px 90px rgba(0,0,0,.2);width:min(580px,100%);max-height:90vh;overflow:auto}
+.receipt-dialog pre{white-space:pre-wrap;font-family:Consolas,monospace;line-height:1.8;color:#244251;background:#f6faf8;border:1px dashed #c5ded8;padding:20px;border-radius:12px;font-size:13px}
+@media(max-width:1000px){.quick-actions{grid-template-columns:1fr 1fr}.two-col-panel{grid-template-columns:1fr}.analytics-grid{grid-template-columns:1fr}.metrics{grid-template-columns:1fr 1fr}.primary-metric{grid-column:auto}}
+@media(max-width:680px){.quick-actions{grid-template-columns:1fr 1fr}.quick-actions button{font-size:12px;min-height:64px}.goals-metrics{grid-template-columns:1fr}.insight-metrics{grid-template-columns:1fr}.history-months{grid-template-columns:1fr 1fr}.metrics{grid-template-columns:1fr}.schedule-line{flex-wrap:wrap}.schedule-actions{width:100%}.virtual-card{padding:21px;min-height:230px}.virtual-card>strong{font-size:19px}.stack-form .button{width:100%}}
