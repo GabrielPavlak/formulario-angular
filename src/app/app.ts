@@ -3,16 +3,16 @@ import { FormsModule } from '@angular/forms';
 
 interface Conta { id:number; code:string; holder:string; agency:string; balanceCents:number; entriesCount:number; createdAt:string }
 type Tipo = 'entrada'|'saida';
-interface Registro { id:number; accountId:number; kind:Tipo; amountCents:number; occurredOn:string; method:string; description:string; reference:string; createdAt:string; balanceAfterCents:number }
+interface Registro { id:number; accountId:number; kind:Tipo; amountCents:number; occurredOn:string; method:string; description:string; reference:string; category:string; createdAt:string; balanceAfterCents:number }
 interface Resumo { accountId:number; balanceCents:number; incomeCents:number; expenseCents:number; count:number }
-type Aba='painel'|'lancamento'|'extrato'|'contas'|'transferir'|'pagamentos'|'agendamentos'|'metas'|'cartoes'|'analises'|'atividade';
+type Aba='painel'|'lancamento'|'extrato'|'contas'|'transferir'|'pagamentos'|'agendamentos'|'metas'|'cartoes'|'analises'|'atividade'|'servicos'|'seguranca'|'avisos'|'ajuda';
 interface Meta {id:number;accountId:number;name:string;targetCents:number;balanceCents:number;createdAt:string}
 interface Cartao {id:number;accountId:number;displayCode:string;status:string;createdAt:string}
 interface Agenda {id:number;accountId:number;toAccountId:number|null;kind:'pix'|'boleto';amountCents:number;dueOn:string;description:string;status:string;createdAt:string;executedAt:string}
 interface Atividade {id:number;action:string;detail:string;createdAt:string}
 interface Analise {month:string;incomeCents:number;expenseCents:number;byCategory:Record<string,number>;budgets:{category:string;limitCents:number}[];history:{month:string;incomeCents:number;expenseCents:number}[]}
 interface Geral {checkingCents:number;reserveCents:number;totalCents:number;pendingSchedules:number;cardStatus:string}
-interface Filtros { from:string; to:string; kind:string; method:string }
+interface Filtros { from:string; to:string; kind:string; method:string; category:string; q:string }
 interface NovoRegistro { kind:Tipo; amount:string; occurredOn:string; method:string; description:string; reference:string }
 function hojeLocal():string {
   const date=new Date();
@@ -43,7 +43,7 @@ export class App implements OnInit {
     'PIX simulado','Transferência simulada','Boleto simulado',
     'Cartão de débito simulado','Dinheiro fictício'
   ];
-  protected filtros:Filtros={from:'',to:'',kind:'',method:''};
+  protected filtros:Filtros={from:'',to:'',kind:'',method:'',category:'',q:''};
   protected novo:NovoRegistro={
     kind:'entrada',amount:'',occurredOn:hojeLocal(),method:'PIX simulado',description:'',reference:''
   };
@@ -58,6 +58,22 @@ export class App implements OnInit {
   protected readonly reservaTotal=computed(()=>this.metas().reduce((v,m)=>v+m.balanceCents,0));
   protected readonly contasDestino=computed(()=>this.contas().filter(c=>c.id!==this.contaId()));
   protected readonly comprovante=signal<string|null>(null);
+  protected readonly ocultarValores=signal(sessionStorage.getItem('banco-escola:ocultar-valores')==='1');
+  protected readonly favoritos=signal<{id:number;holder:string;code:string;createdAt:string}[]>([]);
+  protected readonly limites=signal<{maxPerTransferCents:number;maxDailyCents:number;usedCents:number;remainingCents:number}|null>(null);
+  protected limiteForm={porOperacao:'10000',diario:'20000'};
+  protected readonly nomeCurto=computed(()=>this.atual()?.holder?.split(' ')[0]??'Visitante');
+  protected readonly notificacoesPendentes=computed(()=>this.agendas().filter(a=>a.status==='pendente').length);
+  protected readonly categoriasPrincipais=computed(()=>Object.entries(this.analise()?.byCategory??{}).filter(x=>x[1]>0)
+      .sort((a,b)=>b[1]-a[1]).slice(0,4).map(([name,value])=>({name,value})));
+  protected readonly dataCabecalho=new Intl.DateTimeFormat('pt-BR',{weekday:'long',day:'numeric',month:'long'}).format(new Date());
+  protected readonly titulos:Record<Aba,string>={
+    painel:'Visão geral',lancamento:'Movimentar saldo',extrato:'Meu extrato',contas:'Minhas contas',
+    transferir:'Pix e transferências',pagamentos:'Pagamentos',agendamentos:'Agendamentos',
+    metas:'Minhas metas',cartoes:'Meus cartões',analises:'Controle financeiro',
+    atividade:'Histórico de atividades',servicos:'Todos os serviços',seguranca:'Segurança e limites',
+    avisos:'Central de avisos',ajuda:'Ajuda e informações'
+  };
   protected mesAnalise=hojeLocal().slice(0,7);
   protected categoria='Outros';
   protected transfer={toAccountId:0,amount:'',method:'PIX simulado',description:'Transferência de demonstração'};
@@ -111,6 +127,7 @@ export class App implements OnInit {
     sessionStorage.removeItem('banco-escola:token');
     this.token.set('');this.logado.set(false);
     this.contas.set([]);this.registros.set([]);this.resumo.set(null);
+    this.favoritos.set([]);this.limites.set(null);
     this.aviso.set('');this.erro.set('');this.view.set('painel');
   }
   private async carregarContas():Promise<void>{
@@ -129,6 +146,8 @@ export class App implements OnInit {
     if(this.filtros.to)args.set('to',this.filtros.to);
     if(this.filtros.kind)args.set('kind',this.filtros.kind);
     if(this.filtros.method)args.set('method',this.filtros.method);
+    if(this.filtros.category)args.set('category',this.filtros.category);
+    if(this.filtros.q.trim())args.set('q',this.filtros.q.trim());
     return args.toString();
   }
   protected async carregarExtrato():Promise<void>{
@@ -141,7 +160,7 @@ export class App implements OnInit {
     finally{this.carregando.set(false);}
   }
   protected limparFiltros(reload=true):void{
-    this.filtros={from:'',to:'',kind:'',method:''};
+    this.filtros={from:'',to:'',kind:'',method:'',category:'',q:''};
     if(reload)void this.carregarExtrato();
   }
   protected async registrar():Promise<void>{
@@ -193,16 +212,21 @@ export class App implements OnInit {
     const id=this.contaId();
     const idQuery='?accountId='+id;
     try{
-      const [goals,cards,schedules,activity,overview,analytics]=await Promise.all([
+      const [goals,cards,schedules,activity,overview,analytics,favorites,limits]=await Promise.all([
         this.api<{goals:Meta[]}>('/api/bank/goals'+idQuery),
         this.api<{cards:Cartao[]}>('/api/bank/cards'+idQuery),
         this.api<{schedules:Agenda[]}>('/api/bank/schedules'+idQuery),
         this.api<{items:Atividade[]}>('/api/bank/activity'+idQuery),
         this.api<Geral>('/api/bank/overview'+idQuery),
-        this.api<Analise>('/api/bank/analytics'+idQuery+'&month='+this.mesAnalise)
+        this.api<Analise>('/api/bank/analytics'+idQuery+'&month='+this.mesAnalise),
+        this.api<{favorites:{id:number;holder:string;code:string;createdAt:string}[]}>('/api/bank/favorites'+idQuery),
+        this.api<{limits:{maxPerTransferCents:number;maxDailyCents:number;usedCents:number;remainingCents:number}}>('/api/bank/limits'+idQuery)
       ]);
       this.metas.set(goals.goals);this.cartoes.set(cards.cards);this.agendas.set(schedules.schedules);
       this.atividades.set(activity.items);this.geral.set(overview);this.analise.set(analytics);
+      this.favoritos.set(favorites.favorites);this.limites.set(limits.limits);
+      this.limiteForm={porOperacao:String(limits.limits.maxPerTransferCents/100),
+        diario:String(limits.limits.maxDailyCents/100)};
       if(!this.contasDestino().some(c=>c.id===this.transfer.toAccountId))
         this.transfer.toAccountId=this.contasDestino()[0]?.id??0;
       if(!this.contasDestino().some(c=>c.id===this.agendaForm.toAccountId))
@@ -320,6 +344,44 @@ export class App implements OnInit {
     if(text)void navigator.clipboard.writeText(text).then(
       ()=>this.aviso.set('Comprovante de simulação copiado.'),
       ()=>this.erro.set('Seu navegador não permitiu copiar.'));
+  }
+
+  protected alternarPrivacidade():void{
+    const next=!this.ocultarValores();
+    this.ocultarValores.set(next);
+    sessionStorage.setItem('banco-escola:ocultar-valores',next?'1':'0');
+  }
+  protected saldoFormatado(value:number):string{return this.ocultarValores()?'R$ ••••••':this.dinheiro(value);}
+  protected titula():string{return this.titulos[this.view()];}
+  protected abrirPrimeiraMeta():void{this.abrir('metas');}
+  protected async copiarConta():Promise<void>{
+    const conta=this.atual();
+    if(!conta)return;
+    try{
+      await navigator.clipboard.writeText('Banco Escola (simulado) • Agência '+conta.agency+' • Conta '+conta.code);
+      this.aviso.set('Dados da conta fictícia copiados.');
+    }catch{this.erro.set('Não foi possível copiar os dados da conta.');}
+  }
+  protected selecionarFavorito(toId:number):void{
+    this.transfer.toAccountId=toId;this.abrir('transferir');
+  }
+  protected async adicionarFavorito():Promise<void>{
+    const target=this.transfer.toAccountId;
+    if(!target){this.erro.set('Selecione uma conta destinatária.');return;}
+    await this.executar(()=>this.api('/api/bank/favorites',{method:'POST',
+      body:JSON.stringify({accountId:this.contaId(),toAccountId:target})}),
+      'Conta fictícia adicionada aos favoritos.');
+  }
+  protected async removerFavorito(toId:number):Promise<void>{
+    await this.executar(()=>this.api('/api/bank/favorites/'+toId+'?accountId='+this.contaId(),{
+      method:'DELETE'}),'Favorito removido.');
+  }
+  protected async atualizarLimites():Promise<void>{
+    await this.executar(()=>this.api('/api/bank/limits',{method:'PUT',
+      body:JSON.stringify({accountId:this.contaId(),
+        maxPerTransferCents:this.parseValor(this.limiteForm.porOperacao),
+        maxDailyCents:this.parseValor(this.limiteForm.diario)})}),
+      'Limites fictícios atualizados para esta conta.');
   }
 
 }

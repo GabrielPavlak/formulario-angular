@@ -1,15 +1,28 @@
 <header class="site-header">
   <div class="header-inner">
     <div class="identity">
-      <div class="logo" aria-hidden="true">B</div>
-      <div><strong>Banco Escola</strong><span>Laboratório financeiro • Angular + Node.js</span></div>
+      <div class="logo" aria-hidden="true"><span>B<span class="logo-spark">.</span></span></div>
+      <div><strong>Banco Escola<span class="brand-dot">.</span></strong><span>Seu banco digital de demonstração</span></div>
     </div>
-    <span class="demo-label">SIMULAÇÃO • SEM DINHEIRO REAL</span>
-    @if (logado()) { <button type="button" class="text-action" (click)="sair()">Sair</button> }
+    <div class="header-status"><span class="status-light"></span> SEM DINHEIRO REAL</div>
+    @if(logado()){
+      <div class="header-tools">
+        <button class="header-tool" type="button" (click)="alternarPrivacidade()"
+          [attr.aria-label]="ocultarValores() ? 'Mostrar valores' : 'Ocultar valores'"
+          [title]="ocultarValores() ? 'Mostrar valores' : 'Ocultar valores'">{{ ocultarValores() ? '◉' : '◎' }}</button>
+        <button class="header-tool notifications-trigger" type="button" (click)="abrir('avisos')" aria-label="Abrir central de avisos" title="Avisos">
+          ♧ @if(notificacoesPendentes()){<span class="bell-dot">{{ notificacoesPendentes() }}</span>}
+        </button>
+        <button class="user-pill" type="button" (click)="abrir('seguranca')" title="Central de segurança">
+          <span class="user-avatar">{{ nomeCurto().slice(0,1) }}</span>
+          <span>Conta DEMO</span>
+        </button>
+      </div>
+    }
   </div>
 </header>
 
-<main class="layout">
+<main class="layout" [class.logged-in]="logado()">
   @if (!logado()) {
     <section class="welcome">
       <div class="welcome-copy">
@@ -36,87 +49,148 @@
       </section>
     </section>
   } @else {
-    <section class="page-heading">
-      <div>
-        <div class="eyebrow">AMBIENTE DE DEMONSTRAÇÃO</div>
-        <h1>Gestão de contas fictícias</h1>
-        <p>Controle de entradas, saídas, registros e saldos em um único painel.</p>
+    <aside class="bank-sidebar" aria-label="Menu principal">
+      <div class="sidebar-customer">
+        <span class="sidebar-avatar">{{ nomeCurto().slice(0,1) }}</span>
+        <div><strong>{{ atual()?.holder }}</strong><small>Cliente demonstração</small></div>
       </div>
-      <button type="button" class="button button-light" (click)="abrir('lancamento')">+ Nova movimentação</button>
-    </section>
-
-    <section class="account-bar">
-      <label for="account-select">Conta selecionada</label>
-      <select id="account-select" [ngModel]="contaId()" (ngModelChange)="selecionarConta($event)">
-        @for (c of contas(); track c.id) {
-          <option [ngValue]="c.id">{{ c.holder }} — {{ c.code }}</option>
+      <p class="sidebar-label">MINHA CONTA</p>
+      <nav class="sidebar-menu" aria-label="Serviços bancários fictícios">
+        <button type="button" [class.active]="view()==='painel'" (click)="abrir('painel')"><span class="side-icon">⌂</span> Início</button>
+        <button type="button" [class.active]="view()==='extrato'" (click)="abrir('extrato')"><span class="side-icon">▤</span> Extrato</button>
+        <button type="button" [class.active]="view()==='transferir'" (click)="abrir('transferir')"><span class="side-icon">⇄</span> Pix e transferências</button>
+        <button type="button" [class.active]="view()==='pagamentos'" (click)="abrir('pagamentos')"><span class="side-icon">▥</span> Pagamentos</button>
+        <button type="button" [class.active]="view()==='cartoes'" (click)="abrir('cartoes')"><span class="side-icon">▣</span> Meus cartões</button>
+        <button type="button" [class.active]="view()==='metas'" (click)="abrir('metas')"><span class="side-icon">◇</span> Minhas metas</button>
+        <p class="sidebar-label nested">PLANEJAMENTO</p>
+        <button type="button" [class.active]="view()==='analises'" (click)="abrir('analises')"><span class="side-icon">▥</span> Controle de gastos</button>
+        <button type="button" [class.active]="view()==='agendamentos'" (click)="abrir('agendamentos')"><span class="side-icon">◷</span> Agendamentos</button>
+        <button type="button" [class.active]="view()==='lancamento'" (click)="abrir('lancamento')"><span class="side-icon">＋</span> Novo lançamento</button>
+        <p class="sidebar-label nested">CONFIGURAÇÕES</p>
+        <button type="button" [class.active]="view()==='contas'" (click)="abrir('contas')"><span class="side-icon">♙</span> Contas fictícias</button>
+        <button type="button" [class.active]="view()==='seguranca'" (click)="abrir('seguranca')"><span class="side-icon">♢</span> Segurança e limites</button>
+        <button type="button" [class.active]="view()==='atividade'" (click)="abrir('atividade')"><span class="side-icon">☷</span> Histórico de atividades</button>
+        <button type="button" [class.active]="view()==='ajuda'" (click)="abrir('ajuda')"><span class="side-icon">?</span> Central de ajuda</button>
+      </nav>
+      <div class="sidebar-footer"><div class="sidebar-shield">✓ Dados 100% simulados</div>
+        <small>Ambiente acadêmico<br>Angular • Node.js • SQLite</small>
+        <button type="button" (click)="sair()">↪ Encerrar acesso</button>
+      </div>
+    </aside>
+    <div class="bank-content">
+      <section class="page-heading">
+        <div>
+          <div class="eyebrow">{{ dataCabecalho }}</div>
+          <h1>@if(view()==='painel'){Olá, {{ nomeCurto() }}! 👋} @else {<span>{{ titula() }}</span>}</h1>
+          <p>@if(view()==='painel'){Sua vida financeira fictícia, organizada em um só lugar.}
+            @else {Ambiente de simulação · Sem movimentações bancárias reais.}</p>
+        </div>
+        <div class="heading-actions">
+          <span class="demo-chip"><span class="status-light"></span> Modo demonstração</span>
+          <button class="button button-primary" type="button" (click)="abrir('transferir')">⇄ Transferir</button>
+        </div>
+      </section>
+      <section class="account-bar">
+        <div class="account-field">
+          <label for="account-select">VOCÊ ESTÁ UTILIZANDO</label>
+          <select id="account-select" [ngModel]="contaId()" (ngModelChange)="selecionarConta($event)">
+            @for (c of contas(); track c.id) {<option [ngValue]="c.id">{{ c.holder }} — {{ c.code }}</option>}
+          </select>
+        </div>
+        @if(atual();as conta){
+          <div class="account-identity"><span>Agência {{ conta.agency }} · Conta {{ conta.code }}</span>
+            <button class="copy-button" type="button" (click)="copiarConta()" title="Copiar identificação fictícia">⧉ Copiar</button>
+          </div>
         }
-      </select>
-      @if (atual(); as conta) {
-        <span class="account-number">Agência {{ conta.agency }} · Conta {{ conta.code }}</span>
-      }
-    </section>
+      </section>
+      <nav class="bottom-nav" aria-label="Navegação inferior">
+        <button type="button" [class.active]="view()==='painel'" (click)="abrir('painel')"><span>⌂</span>Início</button>
+        <button type="button" [class.active]="view()==='transferir'" (click)="abrir('transferir')"><span>⇄</span>Pix</button>
+        <button type="button" [class.active]="view()==='extrato'" (click)="abrir('extrato')"><span>▤</span>Extrato</button>
+        <button type="button" [class.active]="view()==='cartoes'" (click)="abrir('cartoes')"><span>▣</span>Cartões</button>
+        <button type="button" [class.active]="view()==='servicos'" (click)="abrir('servicos')"><span>☷</span>Mais</button>
+      </nav>
 
-    <nav class="tabs" aria-label="Navegação bancária fictícia">
-      <button type="button" [class.active]="view()==='painel'" (click)="abrir('painel')">⌂ Início</button>
-      <button type="button" [class.active]="view()==='transferir'" (click)="abrir('transferir')">⇄ Pix / Transferir</button>
-      <button type="button" [class.active]="view()==='pagamentos'" (click)="abrir('pagamentos')">▤ Pagar</button>
-      <button type="button" [class.active]="view()==='extrato'" (click)="abrir('extrato')">▦ Extrato</button>
-      <button type="button" [class.active]="view()==='lancamento'" (click)="abrir('lancamento')">＋ Movimentações</button>
-      <button type="button" [class.active]="view()==='agendamentos'" (click)="abrir('agendamentos')">◷ Agendamentos</button>
-      <button type="button" [class.active]="view()==='metas'" (click)="abrir('metas')">◈ Metas</button>
-      <button type="button" [class.active]="view()==='cartoes'" (click)="abrir('cartoes')">▣ Cartões</button>
-      <button type="button" [class.active]="view()==='analises'" (click)="abrir('analises')">▥ Análises</button>
-      <button type="button" [class.active]="view()==='contas'" (click)="abrir('contas')">♙ Contas</button>
-      <button type="button" [class.active]="view()==='atividade'" (click)="abrir('atividade')">☷ Atividades</button>
-    </nav>
 
     @if (erro()) { <p class="message error" role="alert">{{ erro() }}</p> }
     @if (aviso()) { <p class="message success" role="status">{{ aviso() }}</p> }
 
     @if (view()==='painel') {
-      <div class="quick-actions">
-      <button type="button" (click)="abrir('transferir')"><span>⇄</span> Fazer Pix simulado</button>
-      <button type="button" (click)="abrir('pagamentos')"><span>▤</span> Pagar boleto fictício</button>
-      <button type="button" (click)="abrir('metas')"><span>◈</span> Guardar nas metas</button>
-      <button type="button" (click)="abrir('extrato')"><span>▦</span> Ver extrato</button>
-    </div>
-    <section class="metrics">
-        <article class="metric primary-metric">
-          <div class="metric-top"><span>Saldo disponível</span><span>R$</span></div>
-          <strong>{{ dinheiro(atual()?.balanceCents ?? 0) }}</strong>
-          <small>Saldo total da conta fictícia selecionada</small>
+      <section class="bank-hero-grid">
+        <article class="bank-balance-hero">
+          <div class="hero-top"><span><span class="hero-live"></span> CONTA DIGITAL • DEMO</span><span>◈ Banco Escola</span></div>
+          <div class="hero-balance-label">Saldo disponível
+            <button class="eye-button" type="button" (click)="alternarPrivacidade()"
+              [attr.aria-label]="ocultarValores()?'Exibir saldo':'Esconder saldo'">
+              {{ ocultarValores() ? '◉ Mostrar' : '◎ Ocultar' }}</button>
+          </div>
+          <div class="hero-balance">{{ saldoFormatado(atual()?.balanceCents ?? 0) }}</div>
+          <p>Disponível para suas operações de demonstração</p>
+          <div class="hero-bottom">
+            <div><small>Agência / Conta</small><strong>{{ atual()?.agency }} / {{ atual()?.code }}</strong></div>
+            <div><small>Reservado em metas</small><strong>{{ saldoFormatado(geral()?.reserveCents ?? 0) }}</strong></div>
+          </div>
+          <div class="hero-art" aria-hidden="true"><div></div><div></div></div>
         </article>
-        <article class="metric">
-          <span class="metric-heading">Total patrimonial simulado</span>
-          <strong>{{ dinheiro(geral()?.totalCents ?? 0) }}</strong>
-          <small>Conta + {{ dinheiro(geral()?.reserveCents ?? 0) }} em metas</small>
-        </article>
-        <article class="metric">
-          <span class="metric-heading">Entradas no extrato</span>
-          <strong class="positive">{{ dinheiro(resumo()?.incomeCents ?? 0) }}</strong>
-          <small>{{ resumo()?.count ?? 0 }} registro(s) exibido(s)</small>
-        </article>
-        <article class="metric">
-          <span class="metric-heading">Saídas no extrato</span>
-          <strong class="negative">{{ dinheiro(resumo()?.expenseCents ?? 0) }}</strong>
-          <small>Valores fictícios, sem operação bancária real</small>
+        <article class="bank-mini-card">
+          <div class="mini-topline"><span>MEU CARTÃO</span><span>DEMONSTRAÇÃO</span></div>
+          <div class="bank-chip">▦</div>
+          <div class="mini-card-number">{{ cartoes()[0]?.displayCode ?? 'DEMO •••• 0000' }}</div>
+          <div class="mini-card-bottom"><span>{{ atual()?.holder }}</span><span>{{ cartoes()[0]?.status ?? 'ativo' }}</span></div>
+          <button class="card-open" type="button" (click)="abrir('cartoes')">Gerenciar cartão ↗</button>
         </article>
       </section>
-      <section class="panel">
-        <div class="section-heading">
-          <div><h2>Últimas movimentações</h2><p>Data, forma de pagamento e saldo após cada lançamento.</p></div>
-          <button class="button button-outline" type="button" (click)="abrir('extrato')">Ver extrato completo</button>
+
+      <div class="home-section-label"><h2>O que deseja fazer?</h2><span>Acessos rápidos</span></div>
+      <div class="quick-actions">
+        <button type="button" (click)="abrir('transferir')"><span class="quick-glyph">⇄</span><strong>Pix</strong><small>Transferir</small></button>
+        <button type="button" (click)="abrir('pagamentos')"><span class="quick-glyph">▤</span><strong>Pagar</strong><small>Boletos</small></button>
+        <button type="button" (click)="abrir('lancamento')"><span class="quick-glyph">↓</span><strong>Depositar</strong><small>Simular entrada</small></button>
+        <button type="button" (click)="abrir('metas')"><span class="quick-glyph">◇</span><strong>Guardar</strong><small>Minhas metas</small></button>
+        <button type="button" (click)="abrir('extrato')"><span class="quick-glyph">▦</span><strong>Extrato</strong><small>Movimentações</small></button>
+        <button type="button" (click)="abrir('servicos')"><span class="quick-glyph">☷</span><strong>Mais</strong><small>Serviços</small></button>
+      </div>
+
+      <section class="metrics dashboard-metrics">
+        <article class="metric"><span class="metric-heading">Patrimônio fictício total</span>
+          <strong>{{ saldoFormatado(geral()?.totalCents ?? 0) }}</strong><small>Saldo disponível + suas reservas</small></article>
+        <article class="metric"><span class="metric-heading">Entradas exibidas</span>
+          <strong class="positive">{{ saldoFormatado(resumo()?.incomeCents ?? 0) }}</strong><small>Conforme filtros atuais do extrato</small></article>
+        <article class="metric"><span class="metric-heading">Saídas exibidas</span>
+          <strong class="negative">{{ saldoFormatado(resumo()?.expenseCents ?? 0) }}</strong><small>Movimentações fictícias registradas</small></article>
+      </section>
+
+      <section class="bank-home-bottom">
+        <div class="panel home-transactions">
+          <div class="section-heading"><div><h2>Últimas movimentações</h2><p>Acompanhe seu dinheiro fictício.</p></div>
+            <button class="table-link" type="button" (click)="abrir('extrato')">Ver todas →</button></div>
+          @for (r of registros().slice(0,6); track r.id) {
+            <button class="recent-row home-transaction-button" type="button" (click)="verComprovante(r.id)">
+              <span class="movement-icon" [class.in]="r.kind==='entrada'">{{ r.kind==='entrada' ? '↓' : '↑' }}</span>
+              <span class="movement-title"><strong>{{ r.description }}</strong>
+                <small>{{ dataBR(r.occurredOn) }} · {{ r.category || r.method }}</small></span>
+              <strong class="movement-value" [class.positive]="r.kind==='entrada'" [class.negative]="r.kind==='saida'">
+                {{ r.kind==='entrada' ? '+' : '−' }} {{ saldoFormatado(r.amountCents) }}</strong>
+            </button>
+          } @empty {<p class="empty">Ainda não há movimentações nesta conta. Faça um lançamento para começar.</p>}
         </div>
-        @for (r of registros().slice(0,5); track r.id) {
-          <div class="recent-row">
-            <div class="movement-icon" [class.in]="r.kind==='entrada'">{{ r.kind==='entrada' ? '↙' : '↗' }}</div>
-            <div class="movement-title"><strong>{{ r.description }}</strong><small>{{ dataBR(r.occurredOn) }} · {{ r.method }}</small></div>
-            <strong class="movement-value" [class.positive]="r.kind==='entrada'" [class.negative]="r.kind==='saida'">
-              {{ r.kind==='entrada' ? '+' : '−' }} {{ dinheiro(r.amountCents) }}
-            </strong>
-          </div>
-        } @empty { <p class="empty">Esta conta ainda não possui movimentações.</p> }
+        <div class="home-side-stack">
+          <article class="panel home-insight">
+            <div class="section-heading"><div><h2>Gastos por categoria</h2><p>Mês {{ mesAnalise }}</p></div>
+              <button class="table-link" type="button" (click)="abrir('analises')">Detalhes →</button></div>
+            @for(c of categoriasPrincipais();track c.name){
+              <div class="category-mini"><div><strong>{{ c.name }}</strong><span>{{ saldoFormatado(c.value) }}</span></div>
+                <div class="progress-track"><div class="progress-fill" [style.width.%]="larguraBarra(c.value,totalAnalise())"></div></div></div>
+            } @empty {<p class="empty">Sem despesas categorizadas no mês. Consulte seus lançamentos.</p>}
+          </article>
+          <article class="panel home-pending">
+            <div class="section-heading"><div><h2>Seu planejamento</h2><p>Próximas ações</p></div></div>
+            <button type="button" (click)="abrir('agendamentos')">
+              <span>◷</span><div><strong>{{ geral()?.pendingSchedules ?? 0 }} agendamento(s)</strong><small>Ver pagamentos pendentes →</small></div></button>
+            <button type="button" (click)="abrir('metas')">
+              <span>◇</span><div><strong>{{ metas().length }} meta(s) de reserva</strong><small>Organizar suas economias →</small></div></button>
+          </article>
+        </div>
       </section>
     }
 
@@ -177,8 +251,14 @@
 
     @if (view()==='extrato') {
       <section class="panel">
-        <div class="section-heading"><div><h2>Extrato bancário fictício</h2><p>Consulte por data, tipo de movimento e forma de pagamento.</p></div>
+        <div class="section-heading"><div><h2>Meu extrato detalhado</h2><p>Pesquise por palavra-chave, categoria, período e forma de pagamento.</p></div>
           <button class="button button-outline" type="button" (click)="exportarCSV()">↓ Exportar CSV</button>
+        </div>
+        <div class="search-bar">
+          <span aria-hidden="true">⌕</span>
+          <input type="search" aria-label="Pesquisar no extrato" placeholder="Buscar por descrição, referência ou forma de pagamento"
+            [(ngModel)]="filtros.q" (keyup.enter)="carregarExtrato()" maxlength="100">
+          <button type="button" class="button button-outline" (click)="carregarExtrato()">Pesquisar</button>
         </div>
         <div class="filter-grid">
           <div class="field"><label for="from">De</label><input id="from" type="date" [(ngModel)]="filtros.from"></div>
@@ -189,6 +269,12 @@
           <div class="field"><label for="method-filter">Pagamento</label>
             <select id="method-filter" [(ngModel)]="filtros.method"><option value="">Todas</option>
               @for (m of metodos; track m) { <option [value]="m">{{ m }}</option> }
+            </select>
+          </div>
+          <div class="field"><label for="category-filter">Categoria</label>
+            <select id="category-filter" [(ngModel)]="filtros.category">
+              <option value="">Todas as categorias</option>
+              @for(c of categorias;track c){<option [value]="c">{{ c }}</option>}
             </select>
           </div>
         </div>
@@ -204,11 +290,11 @@
               @for (r of registros(); track r.id) {
                 <tr>
                   <td>{{ dataBR(r.occurredOn) }}</td>
-                  <td><strong>{{ r.description }}</strong><span class="kind-tag" [class.in]="r.kind==='entrada'">{{ r.kind }}</span></td>
+                  <td><strong>{{ r.description }}</strong><span class="kind-tag" [class.in]="r.kind==='entrada'">{{ r.kind }}</span><small class="category-label">{{ r.category }}</small></td>
                   <td><span>{{ r.method }}</span><small>{{ r.reference || 'Sem referência' }} · ID {{ r.id }}</small></td>
                   <td><strong [class.positive]="r.kind==='entrada'" [class.negative]="r.kind==='saida'">
-                    {{ r.kind==='entrada' ? '+' : '−' }} {{ dinheiro(r.amountCents) }}</strong></td>
-                  <td><strong>{{ dinheiro(r.balanceAfterCents) }}</strong></td>
+                    {{ r.kind==='entrada' ? '+' : '−' }} {{ saldoFormatado(r.amountCents) }}</strong></td>
+                  <td><strong>{{ saldoFormatado(r.balanceAfterCents) }}</strong></td>
                   <td><button type="button" class="table-link" (click)="verComprovante(r.id)">Ver</button></td>
                 </tr>
               } @empty {
@@ -253,12 +339,26 @@
             <div><div class="eyebrow">OPERAÇÃO INSTANTÂNEA FICTÍCIA</div><h2>Pix e transferências</h2>
               <p>Uma transferência gera saída na origem e entrada no destino, simultaneamente.</p></div>
           </div>
+          <div class="favorite-container">
+            <div class="favorite-head"><h3>Contatos frequentes</h3><small>Contas fictícias salvas</small></div>
+            <div class="favorite-pills">
+              @for(f of favoritos();track f.id){
+                <button type="button" [class.selected]="transfer.toAccountId===f.id" (click)="selecionarFavorito(f.id)">
+                  <span>{{ f.holder.slice(0,1) }}</span><strong>{{ f.holder }}</strong>
+                </button>
+              } @empty {<small>Salve um destinatário após selecioná-lo.</small>}
+            </div>
+          </div>
           <form (submit)="$event.preventDefault(); transferir()" class="stack-form">
             <div class="field">
               <label for="dest">Conta de destino *</label>
               <select id="dest" name="dest" [(ngModel)]="transfer.toAccountId">
                 @for (c of contasDestino(); track c.id) { <option [ngValue]="c.id">{{ c.holder }} • {{ c.code }}</option> }
               </select>
+              <div class="form-inline-actions">
+                <button type="button" class="table-link" (click)="adicionarFavorito()">☆ Salvar destinatário</button>
+                @if(favoritos().length){<span>{{ favoritos().length }} salvo(s)</span>}
+              </div>
             </div>
             <div class="fields">
               <div class="field"><label for="transfer-amount">Valor a transferir (R$) *</label>
@@ -284,7 +384,11 @@
           <h3>Conta de origem</h3>
           <p>{{ atual()?.holder }}<br><span>{{ atual()?.code }}</span></p>
           <div class="aside-saldo">{{ dinheiro(atual()?.balanceCents ?? 0) }}</div>
-          <small>Valor disponível no simulador. Transferências superiores ao saldo são recusadas.</small>
+          <small>Operações simuladas, limitadas ao saldo e aos limites configurados na Central de Segurança.</small>
+        <div class="limits-inline"><strong>Limite por transferência</strong><span>{{ saldoFormatado(limites()?.maxPerTransferCents ?? 0) }}</span>
+            <strong>Disponível hoje</strong><span>{{ saldoFormatado(limites()?.remainingCents ?? 0) }}</span>
+            <button class="table-link" type="button" (click)="abrir('seguranca')">Ajustar limites fictícios →</button>
+          </div>
         </aside>
       </section>
     }
@@ -543,6 +647,124 @@
       </div>
     }
 
+    
+    @if(view()==='servicos'){
+      <section class="panel">
+        <div class="section-heading"><div><h2>Todos os serviços</h2>
+          <p>Selecione uma funcionalidade bancária para explorar no simulador.</p></div></div>
+        <div class="services-grid">
+          <button type="button" (click)="abrir('transferir')"><span>⇄</span><strong>Área Pix</strong><small>Transferir entre contas fictícias</small></button>
+          <button type="button" (click)="abrir('pagamentos')"><span>▤</span><strong>Pagamentos</strong><small>Boleto demonstrativo</small></button>
+          <button type="button" (click)="abrir('lancamento')"><span>↓</span><strong>Depositar / sacar</strong><small>Lançamentos de teste</small></button>
+          <button type="button" (click)="abrir('extrato')"><span>▦</span><strong>Extrato</strong><small>Pesquisar e emitir CSV</small></button>
+          <button type="button" (click)="abrir('cartoes')"><span>▣</span><strong>Meus cartões</strong><small>Cartão de débito fictício</small></button>
+          <button type="button" (click)="abrir('metas')"><span>◇</span><strong>Minhas metas</strong><small>Guardar e resgatar valores</small></button>
+          <button type="button" (click)="abrir('agendamentos')"><span>◷</span><strong>Agendamentos</strong><small>Programar e executar</small></button>
+          <button type="button" (click)="abrir('analises')"><span>▥</span><strong>Minhas finanças</strong><small>Gastos, categorias e limites</small></button>
+          <button type="button" (click)="abrir('contas')"><span>♙</span><strong>Contas DEMO</strong><small>Selecionar ou abrir nova conta</small></button>
+          <button type="button" (click)="abrir('seguranca')"><span>♢</span><strong>Segurança</strong><small>Privacidade e limites simulados</small></button>
+          <button type="button" (click)="abrir('avisos')"><span>♧</span><strong>Notificações</strong><small>Agenda e avisos internos</small></button>
+          <button type="button" (click)="abrir('ajuda')"><span>?</span><strong>Ajuda</strong><small>Guia de uso do projeto</small></button>
+        </div>
+      </section>
+    }
+
+    @if(view()==='seguranca'){
+      <section class="account-grid">
+        <article class="panel">
+          <div class="section-heading"><div><h2>Privacidade e acesso</h2>
+            <p>Controles para a apresentação acadêmica do simulador.</p></div></div>
+          <div class="settings-item">
+            <div><strong>Ocultar valores na tela</strong><p>Evita mostrar saldos quando o aplicativo estiver em apresentação.</p></div>
+            <button type="button" class="switch-button" [attr.aria-pressed]="ocultarValores()" (click)="alternarPrivacidade()">
+              {{ ocultarValores() ? 'Ativado' : 'Desativado' }}
+            </button>
+          </div>
+          <div class="settings-item">
+            <div><strong>Conta ativa</strong><p>{{ atual()?.holder }} · {{ atual()?.code }}</p></div>
+            <button type="button" class="table-link" (click)="abrir('contas')">Trocar conta</button>
+          </div>
+          <div class="settings-item">
+            <div><strong>Sair do simulador</strong><p>Encerra o acesso deste navegador e solicita novamente o token.</p></div>
+            <button type="button" class="button button-outline" (click)="sair()">Encerrar acesso</button>
+          </div>
+          <div class="info-strip">A autenticação é por um único token local de demonstração. Não existem senhas individuais, biometria ou proteção bancária de produção.</div>
+        </article>
+        <article class="panel">
+          <div class="section-heading"><div><h2>Limites de Pix fictício</h2>
+            <p>Configure valores máximos por operação e por dia.</p></div></div>
+          <div class="limit-progress">
+            <div><small>Utilizado hoje</small><strong>{{ saldoFormatado(limites()?.usedCents??0) }}</strong></div>
+            <div><small>Restante hoje</small><strong>{{ saldoFormatado(limites()?.remainingCents??0) }}</strong></div>
+          </div>
+          <form (submit)="$event.preventDefault(); atualizarLimites()" class="stack-form">
+            <div class="field"><label for="max-single">Máximo por transferência (R$)</label>
+              <input id="max-single" name="maxSingle" [(ngModel)]="limiteForm.porOperacao" inputmode="decimal" required placeholder="10000,00"></div>
+            <div class="field"><label for="max-day">Máximo por dia (R$)</label>
+              <input id="max-day" name="maxDay" [(ngModel)]="limiteForm.diario" inputmode="decimal" required placeholder="20000,00"></div>
+            <button type="submit" class="button button-primary" [disabled]="salvando()">Salvar limites fictícios</button>
+          </form>
+          <p class="form-note">Os limites são apenas regras internas do Banco Escola. Não representam controles de um banco verdadeiro.</p>
+        </article>
+      </section>
+    }
+
+    @if(view()==='avisos'){
+      <section class="account-grid">
+        <article class="panel">
+          <div class="section-heading"><div><h2>Compromissos e avisos</h2>
+            <p>Acompanhamento da sua conta demonstrativa.</p></div></div>
+          @for(a of agendas();track a.id){
+            @if(a.status==='pendente'){
+              <button class="notification-item" type="button" (click)="abrir('agendamentos')">
+                <span class="notif-symbol">◷</span>
+                <span><strong>Agendamento pendente #{{ a.id }}</strong>
+                  <small>{{ a.description }} · {{ dataBR(a.dueOn) }} · {{ saldoFormatado(a.amountCents) }}</small></span>
+                <span class="notification-arrow">›</span>
+              </button>
+            }
+          }
+          @if(notificacoesPendentes()===0){<p class="empty">Nenhum agendamento pendente nesta conta.</p>}
+          <div class="info-strip">Os avisos são gerados a partir do banco SQLite, sem notificações externas ou push.</div>
+        </article>
+        <article class="panel">
+          <div class="section-heading"><div><h2>Atividades recentes</h2>
+            <p>Últimas ações registradas nesta conta.</p></div></div>
+          @for(a of atividades().slice(0,8);track a.id){
+            <div class="activity-item"><span class="activity-dot"></span>
+              <div><strong>{{ a.action.replaceAll('_',' ') }}</strong><p>{{ a.detail }}</p><small>{{ a.createdAt }}</small></div>
+            </div>
+          } @empty {<p class="empty">Nenhuma atividade registrada até agora.</p>}
+          <button class="button button-outline" type="button" (click)="abrir('atividade')">Ver histórico completo</button>
+        </article>
+      </section>
+    }
+
+    @if(view()==='ajuda'){
+      <section class="panel help-panel">
+        <div class="eyebrow">GUIA DO BANCO ESCOLA</div>
+        <h2>Como usar este app bancário fictício?</h2>
+        <p>O Banco Escola reproduz fluxos comuns de aplicativos de banco digital para fins acadêmicos.
+          Ele funciona no navegador e armazena contas e movimentações simuladas em SQLite local.</p>
+        <div class="help-grid">
+          <div><span>01</span><h3>Escolha uma conta</h3><p>Troque entre as contas DEMO ou cadastre novas contas fictícias.</p></div>
+          <div><span>02</span><h3>Faça uma movimentação</h3><p>Simule depósito, pagamento, transferência interna ou reserva em metas.</p></div>
+          <div><span>03</span><h3>Consulte o extrato</h3><p>Busque transações, selecione categorias e exporte os registros em CSV.</p></div>
+          <div><span>04</span><h3>Explore os serviços</h3><p>Cartões, segurança, planejamento e comprovantes demonstrativos.</p></div>
+        </div>
+        <h3>Perguntas frequentes</h3>
+        <details><summary>Este aplicativo faz Pix ou pagamentos verdadeiros?</summary>
+          <p>Não. As operações são inteiramente fictícias e só alteram registros locais de demonstração.</p></details>
+        <details><summary>O saldo continua salvo depois de fechar o navegador?</summary>
+          <p>Sim. Os lançamentos ficam no SQLite enquanto o banco local não for apagado. O token de acesso fica apenas na sessão do navegador.</p></details>
+        <details><summary>Como funcionam os agendamentos?</summary>
+          <p>As operações são criadas como pendentes e devem ser executadas manualmente na data prevista ou posteriormente.</p></details>
+        <details><summary>O que o professor pode avaliar?</summary>
+          <p>Frontend Angular, formulários, validações, API Node.js, tabelas SQLite, regras de saldo, transações atômicas, testes e organização de interface responsiva.</p></details>
+      </section>
+    }
+
     <footer class="footer">Banco Escola • Protótipo acadêmico • Dados inteiramente fictícios • Não conectado a instituições financeiras</footer>
+    </div>
   }
 </main>

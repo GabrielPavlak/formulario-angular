@@ -1,4 +1,32 @@
-# Banco Escola SuperApp — Simulador bancário acadêmico
+# Banco Escola — Banco Digital de Demonstração
+
+**Projeto acadêmico full-stack com aparência de aplicativo bancário brasileiro**, desenvolvido com Angular 22, Node.js 24 e SQLite. Todos os dados, saldos, Pix, cartões e comprovantes são **fictícios**; nenhum valor é transferido fora do simulador.
+
+> Esta versão adiciona uma experiência de superapp: menu lateral no desktop, navegação inferior no celular, painel moderno, saldo ocultável, cartões demonstrativos, pesquisa de extrato, favoritos, alertas internos e limites de Pix configuráveis. A experiência visual é original, inspirada em padrões de aplicativos digitais — sem copiar identidade ou elementos de marcas reais.
+
+## Visão geral da interface
+
+- **Início:** saudação, saldo em destaque com privacidade, agência e conta DEMO, mini cartão, atalhos para Pix/Pagar/Depositar/Guardar, resumo financeiro, últimos registros, análise de gastos e agendamentos pendentes.
+- **Pix e transferências:** contatos frequentes, transferência atômica entre contas fictícias, validação de saldo, limites por operação/dia e comprovantes demonstrativos.
+- **Extrato inteligente:** pesquisa por descrição/referência, filtros por período, método, tipo e categoria, comprovante por registro e exportação CSV.
+- **Segurança:** esconder saldos na sessão, simulação de limites diários e por operação, opção de sair do simulador.
+- **Avisos e ajuda:** agendamentos pendentes e atividades recentes, instruções de uso e FAQ acadêmico.
+- **Responsividade:** barra lateral para computador, barra de navegação inferior no celular, acessos rápidos, campos e botões adaptáveis.
+
+### Fluxo de apresentação recomendado
+
+1. Inicie o backend e o Angular, faça login com o token local.
+2. Mostre o painel de saldo, cartões e gastos da Conta Demonstração A.
+3. Abra Pix, selecione Conta Demonstração B, transfira R$ 25,00 fictícios e confira o comprovante.
+4. Troque para Conta Demonstração B e veja o crédito correspondente.
+5. Volte à primeira conta, abra o extrato e filtre a descrição da transferência.
+6. Salve a segunda conta nos favoritos e demonstre a função de limites de transferência.
+7. Crie uma meta, guarde R$ 10,00 fictícios e mostre a diferença entre saldo disponível e reservado.
+8. Exiba o bloqueio de cartão e a central de avisos; exporte o extrato CSV.
+
+**Importante:** o sistema **não** tem login real por cliente; o token é de operador único e todas as contas DEMO são acessíveis a esse operador. O objetivo é demonstrar interface, API, persistência, regras de negócio e testes.
+
+---
 
 > **SIMULAÇÃO.** O Banco Escola é um aplicativo educacional de controle de dinheiro **fictício**. Não realiza pagamentos, Pix, compensação de boletos, investimentos, autorização de cartões ou transferências bancárias reais. Nenhum saldo representa depósito bancário verdadeiro.
 
@@ -79,6 +107,8 @@ src/app/app.html           Telas e formulários do aplicativo
 src/app/app.css            Interface responsiva
 backend/server.mjs         Ledger de contas, lançamentos, extrato, autenticação e inicialização SQLite
 backend/features.mjs       Transferências, pagamentos, metas, cartões, agendamentos e análises
+backend/experience.mjs     Favoritos e limites de operações fictícias
+backend/experience.test.mjs Testes de favoritos, limites e busca de extratos
 backend/server.test.mjs    Testes iniciais e validações básicas
 backend/features.test.mjs  Testes de fluxos completos, saldos, segurança e idempotência
 proxy.conf.json            Proxy do Angular para a API na porta 8000
