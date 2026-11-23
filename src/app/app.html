@@ -1,125 +1,225 @@
-<header class="topo">
-  <div class="linha-marca">
-    <div class="marca"><img class="icone-forms" src="forms-icon.svg" alt="" width="28" height="36"><span class="nome-arquivo">{{ form().titulo }}</span></div>
-    <button type="button" class="secundario" (click)="irPara(autenticado() ? 'editar' : 'preencher')">{{ autenticado() ? 'Editor' : 'Responder' }}</button>
+<header class="site-header">
+  <div class="header-inner">
+    <div class="identity">
+      <div class="logo" aria-hidden="true">B</div>
+      <div><strong>Banco Escola</strong><span>Laboratório financeiro • Angular + Node.js</span></div>
+    </div>
+    <span class="demo-label">SIMULAÇÃO • SEM DINHEIRO REAL</span>
+    @if (logado()) { <button type="button" class="text-action" (click)="sair()">Sair</button> }
   </div>
-  <nav class="abas" aria-label="Navegação da pesquisa">
-    <button type="button" [class.ativa]="aba() === 'preencher'" (click)="irPara('preencher')">Responder pesquisa</button>
-    <button type="button" [class.ativa]="aba() === 'editar'" (click)="irPara('editar')">Editor</button>
-    <button type="button" [class.ativa]="aba() === 'respostas'" (click)="irPara('respostas')">Resultados</button>
-  </nav>
 </header>
-<main class="pagina">
-  @if (mensagem()) { <p class="alerta" role="status">{{ mensagem() }}</p> }
-  @if (carregando()) { <section class="cartao">Carregando formulário...</section> }
-  @else {
-    @if (aba() !== 'preencher' && !autenticado()) {
-      <section class="cartao cabecalho">
-        <h1>Área administrativa</h1><p class="descricao-leitura">Somente administradores podem editar perguntas e consultar respostas.</p>
-        <label class="campo-label" for="token">Token administrativo</label>
-        <input id="token" class="resposta" type="password" autocomplete="off" [ngModel]="token()" (ngModelChange)="token.set($event)" (keyup.enter)="entrar()" placeholder="Informe o token configurado no servidor">
-        <div class="barra-baixo"><button class="primario" type="button" (click)="entrar()">Entrar</button></div>
+
+<main class="layout">
+  @if (!logado()) {
+    <section class="welcome">
+      <div class="welcome-copy">
+        <div class="eyebrow">PROJETO ACADÊMICO</div>
+        <h1>Seu laboratório de movimentações bancárias.</h1>
+        <p>Cadastre contas fictícias, simule entradas e saídas, acompanhe saldos e consulte extratos por período e forma de pagamento. Nenhuma operação movimenta dinheiro verdadeiro.</p>
+        <div class="capabilities">
+          <span>✓ Registro de movimentações</span><span>✓ Saldo atualizado</span>
+          <span>✓ Extrato e CSV</span><span>✓ SQLite local</span>
+        </div>
+      </div>
+      <section class="login-card">
+        <div class="card-icon">🔐</div>
+        <h2>Entrar no ambiente de testes</h2>
+        <p>Use o token configurado no PowerShell ao iniciar o backend.</p>
+        <label for="token">Token administrativo</label>
+        <input id="token" type="password" autocomplete="off" placeholder="Cole seu token aqui"
+          [ngModel]="token()" (ngModelChange)="token.set($event)" (keyup.enter)="entrar()">
+        <button type="button" class="button button-primary" [disabled]="carregando()" (click)="entrar()">
+          {{ carregando() ? 'Conectando...' : 'Acessar simulador' }}
+        </button>
+        @if (erro()) { <p class="message error" role="alert">{{ erro() }}</p> }
+        <small>Os dados são exclusivamente fictícios. Não informe contas ou senhas reais.</small>
+      </section>
+    </section>
+  } @else {
+    <section class="page-heading">
+      <div>
+        <div class="eyebrow">AMBIENTE DE DEMONSTRAÇÃO</div>
+        <h1>Gestão de contas fictícias</h1>
+        <p>Controle de entradas, saídas, registros e saldos em um único painel.</p>
+      </div>
+      <button type="button" class="button button-light" (click)="abrir('lancamento')">+ Nova movimentação</button>
+    </section>
+
+    <section class="account-bar">
+      <label for="account-select">Conta selecionada</label>
+      <select id="account-select" [ngModel]="contaId()" (ngModelChange)="selecionarConta($event)">
+        @for (c of contas(); track c.id) {
+          <option [ngValue]="c.id">{{ c.holder }} — {{ c.code }}</option>
+        }
+      </select>
+      @if (atual(); as conta) {
+        <span class="account-number">Agência {{ conta.agency }} · Conta {{ conta.code }}</span>
+      }
+    </section>
+
+    <nav class="tabs" aria-label="Navegação bancária fictícia">
+      <button type="button" [class.active]="view()==='painel'" (click)="abrir('painel')">Visão geral</button>
+      <button type="button" [class.active]="view()==='lancamento'" (click)="abrir('lancamento')">Lançar movimento</button>
+      <button type="button" [class.active]="view()==='extrato'" (click)="abrir('extrato')">Extrato</button>
+      <button type="button" [class.active]="view()==='contas'" (click)="abrir('contas')">Contas</button>
+    </nav>
+
+    @if (erro()) { <p class="message error" role="alert">{{ erro() }}</p> }
+    @if (aviso()) { <p class="message success" role="status">{{ aviso() }}</p> }
+
+    @if (view()==='painel') {
+      <section class="metrics">
+        <article class="metric primary-metric">
+          <div class="metric-top"><span>Saldo disponível</span><span>R$</span></div>
+          <strong>{{ dinheiro(atual()?.balanceCents ?? 0) }}</strong>
+          <small>Saldo total da conta fictícia selecionada</small>
+        </article>
+        <article class="metric">
+          <span class="metric-heading">Entradas no extrato</span>
+          <strong class="positive">{{ dinheiro(resumo()?.incomeCents ?? 0) }}</strong>
+          <small>{{ resumo()?.count ?? 0 }} registro(s) exibido(s)</small>
+        </article>
+        <article class="metric">
+          <span class="metric-heading">Saídas no extrato</span>
+          <strong class="negative">{{ dinheiro(resumo()?.expenseCents ?? 0) }}</strong>
+          <small>Valores fictícios, sem operação bancária real</small>
+        </article>
+      </section>
+      <section class="panel">
+        <div class="section-heading">
+          <div><h2>Últimas movimentações</h2><p>Data, forma de pagamento e saldo após cada lançamento.</p></div>
+          <button class="button button-outline" type="button" (click)="abrir('extrato')">Ver extrato completo</button>
+        </div>
+        @for (r of registros().slice(0,5); track r.id) {
+          <div class="recent-row">
+            <div class="movement-icon" [class.in]="r.kind==='entrada'">{{ r.kind==='entrada' ? '↙' : '↗' }}</div>
+            <div class="movement-title"><strong>{{ r.description }}</strong><small>{{ dataBR(r.occurredOn) }} · {{ r.method }}</small></div>
+            <strong class="movement-value" [class.positive]="r.kind==='entrada'" [class.negative]="r.kind==='saida'">
+              {{ r.kind==='entrada' ? '+' : '−' }} {{ dinheiro(r.amountCents) }}
+            </strong>
+          </div>
+        } @empty { <p class="empty">Esta conta ainda não possui movimentações.</p> }
       </section>
     }
-    @if (aba() === 'editar' && autenticado()) {
-      <section class="cartao cabecalho">
-        <label class="campo-label">Título da pesquisa</label>
-        <input class="titulo-form" type="text" [ngModel]="form().titulo" (ngModelChange)="atualizarCabecalho('titulo', $event)" />
-        <label class="campo-label">Descrição</label>
-        <textarea class="resposta" rows="3" [ngModel]="form().descricao" (ngModelChange)="atualizarCabecalho('descricao', $event)"></textarea>
-      </section>
-      @for (p of form().perguntas; track p.id; let i = $index; let ultimo = $last) {
-        <section class="cartao pergunta" [class.focada]="focada() === p.id" (click)="focada.set(p.id)">
-          <div class="linha-topo">
-            <input class="titulo-pergunta" aria-label="Título da pergunta" [ngModel]="p.titulo" (ngModelChange)="alterar(p.id, { titulo: $event })">
-            <select aria-label="Tipo da pergunta" [ngModel]="p.tipo" (ngModelChange)="alterar(p.id, { tipo: $event })">
-              @for (t of tipos; track t.valor) { <option [value]="t.valor">{{ t.rotulo }}</option> }
-            </select>
+
+    @if (view()==='lancamento') {
+      <section class="panel entry-panel">
+        <div class="section-heading">
+          <div><h2>Registrar movimentação fictícia</h2><p>Todos os lançamentos são armazenados no SQLite e alteram o saldo simulado.</p></div>
+          <span class="mini-badge">Operação de teste</span>
+        </div>
+        <form (submit)="$event.preventDefault(); registrar()">
+          <div class="type-picker" role="group" aria-label="Tipo de movimentação">
+            <label [class.chosen]="novo.kind==='entrada'"><input type="radio" name="kind" value="entrada" [(ngModel)]="novo.kind"> Entrada (+)</label>
+            <label [class.chosen]="novo.kind==='saida'"><input type="radio" name="kind" value="saida" [(ngModel)]="novo.kind"> Saída (−)</label>
           </div>
-          <div class="previa">
-            @if (p.tipo === 'texto' || p.tipo === 'paragrafo') { <div class="falso-campo">Campo de resposta {{ p.tipo === 'texto' ? 'curta' : 'longa' }}</div> }
-            @else {
-              @for (o of p.opcoes; track $index) {
-                <div class="opcao-edicao">
-                  <span class="marcador" [class.quadrado]="p.tipo === 'caixas'"></span>
-                  <input [ngModel]="o" (ngModelChange)="alterarOpcao(p.id, $index, $event)" aria-label="Texto da opção">
-                  <button type="button" class="icone" aria-label="Remover opção" [disabled]="p.opcoes.length === 1" (click)="removerOpcao(p.id, $index)">✕</button>
-                </div>
-              }
-              <button type="button" class="link" (click)="adicionarOpcao(p.id)">+ Adicionar opção</button>
-            }
-          </div>
-          <div class="rodape-pergunta">
-            <label class="obrigatoria"><input type="checkbox" [checked]="p.obrigatoria" (change)="alterar(p.id, { obrigatoria: $any($event.target).checked })"> Obrigatória</label>
-            <div class="acoes">
-              <button type="button" class="icone" [disabled]="i === 0" (click)="mover(p.id, -1)">↑ Subir</button>
-              <button type="button" class="icone" [disabled]="ultimo" (click)="mover(p.id, 1)">↓ Descer</button>
-              <button type="button" class="icone" (click)="duplicarPergunta(p.id)">Duplicar</button>
-              <button type="button" class="icone perigo" (click)="removerPergunta(p.id)">Excluir</button>
+          <div class="fields">
+            <div class="field">
+              <label for="amount">Valor (R$) *</label>
+              <input id="amount" name="amount" [(ngModel)]="novo.amount" type="text" inputmode="decimal"
+                placeholder="Ex.: 150,75" maxlength="12" required>
+              <small>Use vírgula ou ponto para separar centavos.</small>
+            </div>
+            <div class="field">
+              <label for="occurred">Data de entrada ou saída *</label>
+              <input id="occurred" name="occurred" [(ngModel)]="novo.occurredOn" type="date" required>
+            </div>
+            <div class="field">
+              <label for="method">Forma de pagamento *</label>
+              <select id="method" name="method" [(ngModel)]="novo.method">
+                @for (m of metodos; track m) { <option [value]="m">{{ m }}</option> }
+              </select>
+            </div>
+            <div class="field">
+              <label for="reference">Registro / referência fictícia</label>
+              <input id="reference" name="reference" [(ngModel)]="novo.reference" type="text"
+                placeholder="Ex.: MOV-2026-001" maxlength="80">
+            </div>
+            <div class="field full">
+              <label for="description">Descrição da movimentação *</label>
+              <input id="description" name="description" [(ngModel)]="novo.description" type="text"
+                placeholder="Ex.: Pagamento de material para escritório" maxlength="180" required>
             </div>
           </div>
-        </section>
-      }
-      <div class="barra-baixo">
-        <button type="button" class="primario" (click)="adicionarPergunta()">+ Adicionar pergunta</button>
-        <button type="button" class="secundario" [disabled]="salvando()" (click)="salvar()">{{ salvando() ? 'Salvando...' : 'Salvar agora' }}</button>
-        <button type="button" class="secundario" (click)="sair()">Sair da administração</button>
-      </div>
-    }
-    @if (aba() === 'preencher') {
-      <section class="cartao cabecalho">
-        <h1>{{ form().titulo }}</h1><p class="descricao-leitura">{{ form().descricao }}</p>
-        <p class="aviso-privacidade">Pesquisa voluntária. Não informe senhas, documentos ou dados pessoais sensíveis.</p>
+          <div class="entry-footer">
+            <p>Saídas são recusadas se deixarem o saldo negativo, inclusive em datas anteriores.</p>
+            <button class="button button-primary" type="submit" [disabled]="salvando()">
+              {{ salvando() ? 'Registrando...' : 'Registrar movimentação fictícia' }}
+            </button>
+          </div>
+        </form>
       </section>
-      @if (enviado()) {
-        <section class="cartao"><h2>Resposta registrada!</h2><p>Obrigado por participar.</p>
-          <button class="primario" type="button" (click)="outraResposta()">Enviar outra resposta</button>
-        </section>
-      } @else {
-        @for (p of form().perguntas; track p.id; let i = $index) {
-          <section class="cartao" [class.com-erro]="erros.has(p.id)">
-            <p class="enunciado"><span class="num">{{ i + 1 }}.</span> {{ p.titulo }} @if (p.obrigatoria) { <span class="asterisco">*</span> }</p>
-            @switch (p.tipo) {
-              @case ('texto') { <input type="text" class="resposta" placeholder="Sua resposta" [value]="valores[p.id] ?? ''" (input)="valores[p.id] = $any($event.target).value"> }
-              @case ('paragrafo') { <textarea class="resposta" rows="4" placeholder="Sua resposta" [value]="valores[p.id] ?? ''" (input)="valores[p.id] = $any($event.target).value"></textarea> }
-              @case ('multipla') {
-                @for (o of p.opcoes; track $index) { <label class="escolha"><input type="radio" [name]="p.id" [checked]="valores[p.id] === o" (change)="valores[p.id] = o">{{ o }}</label> }
-              }
-              @case ('caixas') {
-                @for (o of p.opcoes; track $index) { <label class="escolha"><input type="checkbox" [checked]="caixaMarcada(p.id, o)" (change)="alternarCaixa(p.id, o, $any($event.target).checked)">{{ o }}</label> }
-              }
-              @case ('lista') {
-                <select class="resposta" aria-label="Selecione uma resposta" [value]="valores[p.id] ?? ''" (change)="valores[p.id] = $any($event.target).value">
-                  <option value="">Selecione...</option>
-                  @for (o of p.opcoes; track $index) { <option [value]="o">{{ o }}</option> }
-                </select>
-              }
-            }
-            @if (erros.has(p.id)) { <p class="msg-erro">Resposta obrigatória.</p> }
-          </section>
-        }
-        <div class="barra-baixo"><button type="button" class="primario" [disabled]="enviando() || !form().perguntas.length" (click)="enviar()">{{ enviando() ? 'Enviando...' : 'Enviar respostas' }}</button></div>
-      }
     }
-    @if (aba() === 'respostas' && autenticado()) {
-      <section class="cartao cabecalho"><h1>Resultados da pesquisa</h1>
-        <p class="descricao-leitura">{{ totalRespostas() }} resposta(s) armazenada(s) no servidor.</p>
+
+    @if (view()==='extrato') {
+      <section class="panel">
+        <div class="section-heading"><div><h2>Extrato bancário fictício</h2><p>Consulte por data, tipo de movimento e forma de pagamento.</p></div>
+          <button class="button button-outline" type="button" (click)="exportarCSV()">↓ Exportar CSV</button>
+        </div>
+        <div class="filter-grid">
+          <div class="field"><label for="from">De</label><input id="from" type="date" [(ngModel)]="filtros.from"></div>
+          <div class="field"><label for="to">Até</label><input id="to" type="date" [(ngModel)]="filtros.to"></div>
+          <div class="field"><label for="kind-filter">Movimento</label>
+            <select id="kind-filter" [(ngModel)]="filtros.kind"><option value="">Todos</option><option value="entrada">Entradas</option><option value="saida">Saídas</option></select>
+          </div>
+          <div class="field"><label for="method-filter">Pagamento</label>
+            <select id="method-filter" [(ngModel)]="filtros.method"><option value="">Todas</option>
+              @for (m of metodos; track m) { <option [value]="m">{{ m }}</option> }
+            </select>
+          </div>
+        </div>
+        <div class="filter-actions">
+          <button type="button" class="button button-primary" [disabled]="carregando()" (click)="carregarExtrato()">Aplicar filtros</button>
+          <button type="button" class="button button-outline" (click)="limparFiltros()">Limpar filtros</button>
+          <span>{{ resumo()?.count ?? 0 }} movimentação(ões)</span>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Data</th><th>Movimentação</th><th>Forma / referência</th><th>Valor</th><th>Saldo após</th></tr></thead>
+            <tbody>
+              @for (r of registros(); track r.id) {
+                <tr>
+                  <td>{{ dataBR(r.occurredOn) }}</td>
+                  <td><strong>{{ r.description }}</strong><span class="kind-tag" [class.in]="r.kind==='entrada'">{{ r.kind }}</span></td>
+                  <td><span>{{ r.method }}</span><small>{{ r.reference || 'Sem referência' }} · ID {{ r.id }}</small></td>
+                  <td><strong [class.positive]="r.kind==='entrada'" [class.negative]="r.kind==='saida'">
+                    {{ r.kind==='entrada' ? '+' : '−' }} {{ dinheiro(r.amountCents) }}</strong></td>
+                  <td><strong>{{ dinheiro(r.balanceAfterCents) }}</strong></td>
+                </tr>
+              } @empty {
+                <tr><td colspan="5" class="empty">Nenhuma movimentação encontrada para os filtros informados.</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
       </section>
-      @if (totalRespostas()) {
-        <section class="cartao tabela-wrap"><table><thead><tr><th>Data</th>
-          @for (p of form().perguntas; track p.id) { <th>{{ p.titulo }}</th> }
-        </tr></thead><tbody>
-          @for (r of respostas(); track r.id) { <tr><td>{{ formatarData(r.data) }}</td>
-            @for (p of form().perguntas; track p.id) { <td>{{ formatar(r.valores[p.id]) }}</td> }
-          </tr> }
-        </tbody></table></section>
-      } @else { <section class="cartao"><p>Ainda não há respostas enviadas.</p></section> }
-      <div class="barra-baixo">
-        <button type="button" class="primario" (click)="atualizarRespostas()">Atualizar</button>
-        <button type="button" class="secundario" (click)="exportarCsv()">Exportar CSV</button>
-        <button type="button" class="secundario perigo" (click)="apagarRespostas()">Apagar respostas</button>
-        <button type="button" class="secundario" (click)="sair()">Sair</button>
-      </div>
     }
+
+    @if (view()==='contas') {
+      <section class="account-grid">
+        <div class="panel">
+          <div class="section-heading"><div><h2>Contas de demonstração</h2><p>Identificações não vinculadas a bancos reais.</p></div></div>
+          @for (c of contas(); track c.id) {
+            <button type="button" class="account-item" [class.selected]="c.id===contaId()" (click)="selecionarConta(c.id); abrir('painel')">
+              <span class="avatar">{{ c.id }}</span>
+              <span class="account-info"><strong>{{ c.holder }}</strong><small>Agência {{ c.agency }} · {{ c.code }} · {{ c.entriesCount }} registros</small></span>
+              <strong>{{ dinheiro(c.balanceCents) }}</strong>
+            </button>
+          }
+        </div>
+        <div class="panel">
+          <div class="section-heading"><div><h2>Cadastrar conta fictícia</h2><p>O número SIM-XXXXX é criado automaticamente.</p></div></div>
+          <form (submit)="$event.preventDefault(); criarConta()">
+            <div class="field"><label for="holder">Nome de identificação fictício *</label>
+              <input id="holder" name="holder" [(ngModel)]="titular" type="text"
+                placeholder="Ex.: Cliente Demonstração D" maxlength="100" required>
+            </div>
+            <p class="form-note">A nova conta inicia com saldo zero. Faça uma entrada para simular depósito inicial.</p>
+            <button type="submit" class="button button-primary" [disabled]="salvando()">Criar conta de demonstração</button>
+          </form>
+        </div>
+      </section>
+    }
+    <footer class="footer">Banco Escola • Protótipo acadêmico • Dados inteiramente fictícios • Não conectado a instituições financeiras</footer>
   }
 </main>
