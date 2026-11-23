@@ -1,4 +1,4 @@
-import { Component, computed, OnInit, signal } from '@angular/core';
+import { Component, computed, HostListener, OnInit, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 interface Conta { id:number; code:string; holder:string; agency:string; balanceCents:number; entriesCount:number; createdAt:string }
@@ -12,6 +12,7 @@ interface Agenda {id:number;accountId:number;toAccountId:number|null;kind:'pix'|
 interface Atividade {id:number;action:string;detail:string;createdAt:string}
 interface Analise {month:string;incomeCents:number;expenseCents:number;byCategory:Record<string,number>;budgets:{category:string;limitCents:number}[];history:{month:string;incomeCents:number;expenseCents:number}[]}
 interface Geral {checkingCents:number;reserveCents:number;totalCents:number;pendingSchedules:number;cardStatus:string}
+interface RevisaoOperacao {tipo:'transferencia'|'pagamento';destino:string;descricao:string;valorCentavos:number;metodo:string;saldoPrevistoCentavos:number;referencia:string}
 interface Filtros { from:string; to:string; kind:string; method:string; category:string; q:string }
 interface NovoRegistro { kind:Tipo; amount:string; occurredOn:string; method:string; description:string; reference:string }
 function hojeLocal():string {
@@ -58,6 +59,13 @@ export class App implements OnInit {
   protected readonly reservaTotal=computed(()=>this.metas().reduce((v,m)=>v+m.balanceCents,0));
   protected readonly contasDestino=computed(()=>this.contas().filter(c=>c.id!==this.contaId()));
   protected readonly comprovante=signal<string|null>(null);
+  protected readonly revisao=signal<RevisaoOperacao|null>(null);
+  private chaveTransferencia: {assinatura:string;chave:string}|null=null;
+  protected readonly picoHistorico=computed(()=>Math.max(1,...(this.analise()?.history??[])
+    .flatMap(item=>[item.incomeCents,item.expenseCents])));
+  protected alturaGrafico(value:number):number{
+    return value>0?Math.max(5,Math.min(100,Math.round(value/this.picoHistorico()*100))):0;
+  }
   protected readonly ocultarValores=signal(sessionStorage.getItem('banco-escola:ocultar-valores')==='1');
   protected readonly favoritos=signal<{id:number;holder:string;code:string;createdAt:string}[]>([]);
   protected readonly limites=signal<{maxPerTransferCents:number;maxDailyCents:number;usedCents:number;remainingCents:number}|null>(null);
@@ -108,6 +116,7 @@ export class App implements OnInit {
   }
   protected abrir(v:Aba):void{
     this.view.set(v);this.erro.set('');this.aviso.set('');
+    this.revisao.set(null);
   }
   protected async entrar():Promise<void>{
     if(!this.token()){this.erro.set('Informe o token do backend.');return;}
@@ -129,6 +138,7 @@ export class App implements OnInit {
     this.contas.set([]);this.registros.set([]);this.resumo.set(null);
     this.favoritos.set([]);this.limites.set(null);
     this.aviso.set('');this.erro.set('');this.view.set('painel');
+    this.revisao.set(null);this.chaveTransferencia=null;
   }
   private async carregarContas():Promise<void>{
     const data=await this.api<{accounts:Conta[]}>('/api/bank/accounts');
@@ -251,13 +261,69 @@ export class App implements OnInit {
     }catch(e){this.erro.set(e instanceof Error?e.message:'Não foi possível concluir a operação fictícia.');return false;}
     finally{this.salvando.set(false);}
   }
+
+  /** Etapa de conferência: nenhum lançamento é enviado antes da confirmação. */
+  protected revisarTransferencia():void {
+    this.erro.set('');
+    const cents=paraCentavos(this.transfer.amount);
+    if(cents===null){this.erro.set('Informe um valor positivo com até dois centavos decimais.');return;}
+    const destinatario=this.contasDestino().find(c=>c.id===this.transfer.toAccountId);
+    if(!destinatario){this.erro.set('Selecione uma conta fictícia de destino.');return;}
+    if(this.transfer.description.trim().length<3){this.erro.set('Informe a descrição da transferência.');return;}
+    const disponivel=this.atual()?.balanceCents??0;
+    if(cents>disponivel){this.erro.set('Saldo fictício insuficiente para esta transferência.');return;}
+    const limites=this.limites();
+    if(limites&&(cents>limites.maxPerTransferCents||cents>limites.remainingCents)){
+      this.erro.set('Valor excede o limite fictício disponível. Consulte Segurança e limites.');return;
+    }
+    this.revisao.set({
+      tipo:'transferencia',destino:destinatario.holder+' • '+destinatario.code,
+      descricao:this.transfer.description.trim(),valorCentavos:cents,
+      metodo:this.transfer.method,referencia:'Transferência interna DEMO',
+      saldoPrevistoCentavos:disponivel-cents
+    });
+  }
+  protected revisarPagamento():void {
+    this.erro.set('');
+    const cents=paraCentavos(this.bill.amount);
+    if(cents===null){this.erro.set('Informe um valor de pagamento válido.');return;}
+    if(this.bill.payee.trim().length<3){this.erro.set('Informe um favorecido fictício.');return;}
+    if(this.bill.reference.trim().length<3){this.erro.set('Informe a referência do boleto demonstrativo.');return;}
+    const disponivel=this.atual()?.balanceCents??0;
+    if(cents>disponivel){this.erro.set('Saldo fictício insuficiente para este pagamento.');return;}
+    this.revisao.set({
+      tipo:'pagamento',destino:this.bill.payee.trim(),descricao:'Boleto de demonstração',
+      valorCentavos:cents,metodo:'Boleto simulado',referencia:this.bill.reference.trim(),
+      saldoPrevistoCentavos:disponivel-cents
+    });
+  }
+  @HostListener('document:keydown.escape')
+  protected fecharSobreposicoes():void{
+    if(this.revisao())this.revisao.set(null);
+    else if(this.comprovante())this.comprovante.set(null);
+  }
+  protected async confirmarRevisao():Promise<void>{
+    if(this.salvando())return;
+    const revisao=this.revisao();
+    if(!revisao)return;
+    this.revisao.set(null);
+    if(revisao.tipo==='transferencia')await this.transferir();
+    else await this.pagar();
+  }
+
   protected async transferir():Promise<void>{
     let cents:number;
     try{cents=this.parseValor(this.transfer.amount);}catch(e){this.erro.set((e as Error).message);return;}
     const dest=this.transfer.toAccountId;
     if(!dest||dest===this.contaId()){this.erro.set('Escolha uma conta destinatária diferente.');return;}
     if(this.transfer.description.trim().length<3){this.erro.set('Informe uma descrição para a transferência.');return;}
-    const key=globalThis.crypto?.randomUUID?.()??('DEMO-'+Date.now()+'-'+Math.random());
+    const assinatura=JSON.stringify([this.contaId(),dest,cents,this.transfer.method,this.transfer.description.trim()]);
+    if(!this.chaveTransferencia||this.chaveTransferencia.assinatura!==assinatura){
+      this.chaveTransferencia={
+        assinatura,chave:globalThis.crypto?.randomUUID?.()??('DEMO-'+Date.now()+'-'+Math.random())
+      };
+    }
+    const key=this.chaveTransferencia.chave;
     const ok=await this.executar(async()=>{
       const result=await this.api<{id:number;duplicated:boolean}>('/api/bank/transfer',{method:'POST',
         body:JSON.stringify({fromAccountId:this.contaId(),toAccountId:dest,amountCents:cents,
@@ -267,7 +333,7 @@ export class App implements OnInit {
         '\nOrigem: '+this.atual()?.code+'\nDestino: '+(recipient?.code??dest)+
         '\nValor: '+this.dinheiro(cents)+'\nMétodo: '+this.transfer.method+'\nNÃO É COMPROVANTE BANCÁRIO REAL.');
     },'Transferência entre contas fictícias concluída.');
-    if(ok){this.transfer.amount='';this.view.set('extrato');}
+    if(ok){this.transfer.amount='';this.chaveTransferencia=null;this.view.set('extrato');}
   }
   protected async pagar():Promise<void>{
     const ok=await this.executar(async()=>{

@@ -450,3 +450,63 @@ app-root .logged-in .message{margin:0 0 18px;border-radius:12px}
  app-root .footer{font-size:10px}
 }
 @media(prefers-reduced-motion:reduce){app-root *{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+
+
+/* Revisão de operações — decisão deliberada e prevenção de erros */
+.review-backdrop{position:fixed;inset:0;z-index:130;background:rgba(15,30,45,.71);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.review-dialog{background:#fff;color:#213748;border:1px solid #e7edf1;border-radius:24px;width:min(530px,100%);padding:27px 30px;box-shadow:0 30px 85px rgba(3,27,43,.24);max-height:calc(100dvh - 40px);overflow-y:auto}
+.review-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px}
+.review-emblem{height:46px;width:46px;display:grid;place-items:center;border-radius:15px;background:#dff9ee;color:#07876b;font-size:23px;font-weight:900}
+.review-close{width:40px;height:40px;display:grid;place-items:center;border:1px solid #e7edf1;border-radius:11px;background:#f7f9fb;color:#667c8e;font-size:16px}
+.review-close:hover{color:#b42b4b;background:#fff1f3}
+.review-dialog .eyebrow{font-size:10px;letter-spacing:1.6px}
+.review-dialog h2{font-size:25px;letter-spacing:-.8px;margin:8px 0 10px}
+.review-dialog>p{color:#7c8c9a;line-height:1.6;font-size:13px;margin:0 0 22px}
+.review-amount{padding:23px 20px;background:linear-gradient(120deg,#0a4250,#087c74);border-radius:16px;color:#fff;display:flex;flex-direction:column;gap:9px}
+.review-amount small{font-size:10px;letter-spacing:1.3px;color:#b0e5d9;font-weight:800}
+.review-amount strong{font-size:clamp(31px,4vw,39px);font-weight:850;letter-spacing:-1px}
+.review-amount span{font-size:11px;color:#c4e7df}
+.review-details{margin:20px 0}
+.review-details>div{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;padding:11px 0;border-bottom:1px solid #edf1f4}
+.review-details dt{font-size:12px;color:#7c90a0;flex:0 0 37%}
+.review-details dd{text-align:right;font-size:12px;font-weight:750;color:#294354;margin:0;overflow-wrap:anywhere}
+.review-details .review-result{font-size:15px;color:#058771}
+.review-warning{display:flex;align-items:flex-start;gap:12px;padding:13px;background:#f2f8ff;border:1px solid #dfeef9;border-radius:11px;font-size:11px;line-height:1.7;color:#5d788d}
+.review-warning>span:first-child{color:#3979a6;font-size:17px}
+.review-actions{display:flex;gap:12px;justify-content:flex-end;margin-top:25px}
+.review-actions>.button{min-height:44px;flex:1}
+.chart-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-top:38px}
+.chart-heading h3{font-size:18px;letter-spacing:-.5px;margin:0 0 6px}
+.chart-heading p{font-size:12px;color:#8295a3;margin:0}
+.chart-key{display:flex;gap:16px;font-size:11px;color:#637789;white-space:nowrap}
+.chart-key span{display:flex;align-items:center;gap:6px}
+.chart-key i{display:inline-block;height:10px;width:10px;border-radius:4px}
+.chart-key-in{background:#0f9b80}
+.chart-key-out{background:#f1ad62}
+.month-chart{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;height:220px;align-items:end;padding:23px 18px 12px;margin-top:19px;background:linear-gradient(to top,#f0f5f7 1px,transparent 1px);background-size:100% 20%;border-bottom:1px solid #dce5eb;border-left:1px solid #e3ebef;border-radius:10px}
+.month-column{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:0}
+.month-bars{display:flex;align-items:end;justify-content:center;gap:5px;flex:1;min-height:0;width:100%;max-width:98px}
+.month-bar-in,.month-bar-out{width:37%;max-width:26px;min-height:0;min-width:9px;border-radius:7px 7px 0 0;transition:height .25s ease}
+.month-bar-in{background:linear-gradient(#14b9a0,#0a8d7a)}
+.month-bar-out{background:linear-gradient(#ffcd8b,#f3a34a)}
+.month-column>span{font-size:10px;color:#8296a4;font-weight:750;padding-top:12px;white-space:nowrap}
+.chart-accessible-table{margin-top:23px;overflow-x:auto}
+.chart-accessible-table caption{text-align:left;color:#6c8291;font-size:11px;margin-bottom:8px}
+.chart-accessible-table th{background:#f7fafb}
+.chart-accessible-table td{padding:11px 12px}
+.chart-note{font-size:11px;color:#7d93a0;line-height:1.6;margin:16px 0 0}
+@media(max-width:700px){
+ .review-dialog{padding:20px}
+ .review-actions{flex-direction:column-reverse}
+ .review-details>div{gap:12px}
+ .month-chart{gap:9px;padding:17px 11px 9px;height:190px}
+ .chart-heading{flex-direction:column}
+}
+@media(max-width:420px){
+ .review-backdrop{padding:11px}
+ .review-dialog{border-radius:18px;padding:19px 15px}
+ .review-dialog h2{font-size:22px}
+ .review-amount{padding:18px}
+ .review-details dt,.review-details dd{font-size:11px}
+ .month-chart{gap:5px}
+}

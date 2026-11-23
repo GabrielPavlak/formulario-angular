@@ -4,6 +4,14 @@
 
 > Esta versão adiciona uma experiência de superapp: menu lateral no desktop, navegação inferior no celular, painel moderno, saldo ocultável, cartões demonstrativos, pesquisa de extrato, favoritos, alertas internos e limites de Pix configuráveis. A experiência visual é original, inspirada em padrões de aplicativos digitais — sem copiar identidade ou elementos de marcas reais.
 
+## Refinamento de entrega
+
+Esta versão acrescenta **conferência antes da confirmação de Pix e boletos fictícios**, gráfico mensal com tabela acessível, proteção contra duplicidade de boleto por referência e gravação atômica de movimentação/categoria/auditoria.
+
+A documentação técnica, os critérios de aceite e o roteiro de apresentação estão em [**docs/RELATORIO-TECNICO-ENTREGA.md**](docs/RELATORIO-TECNICO-ENTREGA.md).
+
+Verificação completa: `npm run check` (build de produção, testes Angular e testes Node.js/SQLite).
+
 ## Visão geral da interface
 
 - **Início:** saudação, saldo em destaque com privacidade, agência e conta DEMO, mini cartão, atalhos para Pix/Pagar/Depositar/Guardar, resumo financeiro, últimos registros, análise de gastos e agendamentos pendentes.
