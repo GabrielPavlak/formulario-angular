@@ -261,7 +261,7 @@ export async function handleExtra(db,req,res,path,url){
   }
   if(route.match(/^\/receipts\/\d+$/)&&method==='GET'){
     const entryId=id(route.split('/')[2]),accountId=queryAccount();account(db,accountId);
-    const entry=db.prepare('SELECT e.id,e.account_id AS accountId,e.kind,e.amount_cents AS amountCents,e.occurred_on AS occurredOn,e.method,e.description,e.reference,e.created_at AS createdAt,COALESCE(c.category,"Outros") AS category FROM bank_entries e LEFT JOIN bank_entry_categories c ON c.entry_id=e.id WHERE e.id=? AND e.account_id=?').get(entryId,accountId);
+    const entry=db.prepare('SELECT e.id,e.account_id AS accountId,e.kind,e.amount_cents AS amountCents,e.occurred_on AS occurredOn,e.method,e.description,e.reference,e.created_at AS createdAt,COALESCE(c.category,\'Outros\') AS category FROM bank_entries e LEFT JOIN bank_entry_categories c ON c.entry_id=e.id WHERE e.id=? AND e.account_id=?').get(entryId,accountId);
     ensure(entry,'Registro não encontrado.',404);
     return reply(res,200,{receipt:{...entry,disclaimer:'DEMONSTRAÇÃO — SEM VALIDADE BANCÁRIA'}}),true;
   }
